@@ -81,19 +81,34 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
                     월별 안전교육 수료 현황 보고서
                 </h1>
-                <div class="w-full md:w-auto text-right">
-                    <select id="monthSelect" class="form-select w-full md:w-auto rounded-lg shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg font-semibold">
-                        <option value="6">2025년 6월</option>
-                        <option value="7">2025년 7월</option>
-                        <option value="8">2025년 8월</option>
-                        <option value="9">2025년 9월</option>
-                        <option value="10">2025년 10월</option>
-                        <option value="11" selected>2025년 11월</option>
-                    </select>
+                <div class="w-full md:w-auto flex flex-col items-end">
+                    
+                    <!-- 커스텀 드롭다운 (안전교육) -->
+                    <div class="relative w-full md:w-56 group">
+                        <!-- 달력 아이콘 (왼쪽) -->
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <select id="monthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-semibold text-lg cursor-pointer hover:border-blue-400 transition-all">
+                            <option value="6">2025년 6월</option>
+                            <option value="7">2025년 7월</option>
+                            <option value="8">2025년 8월</option>
+                            <option value="9">2025년 9월</option>
+                            <option value="10">2025년 10월</option>
+                            <option value="11" selected>2025년 11월</option>
+                        </select>
+                        <!-- 화살표 아이콘 (오른쪽) -->
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
                     
                     <!-- 요약 카드 컨테이너 (grid) -->
-                    <!-- *** 수정: md(중간) 화면에서는 2열, lg(큰) 화면에서는 3열로 변경하여 공간 확보 *** -->
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full md:w-auto">
                         <!-- "누적 인원" 카드 -->
                         <div id="cumulativeSummaryContainerSafety" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
                             <div class="text-sm font-semibold text-gray-600">총 누적 수료</div>
@@ -108,7 +123,7 @@
                             <div id="monthlyGrowthSafety" class="mt-1 text-md text-gray-500">(10월 대비 <span class="text-blue-600">-59.5%</span>)</div>
                         </div>
 
-                        <!-- *** 신규: 교육수료비용 카드 *** -->
+                        <!-- 교육수료비용 카드 -->
                         <div id="monthlyCostContainerSafety" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
                             <div class="text-sm font-semibold text-gray-600">교육수료비용 (선택 월)</div>
                             <div id="monthlyCostSafety" class="text-3xl font-bold text-teal-600"><span class="whitespace-nowrap">3,384,000 원</span></div>
@@ -132,20 +147,35 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
                         그라이더: 일별 가입 추이
                     </h1>
-                    <div class="w-full md:w-auto text-right">
-                        <select id="gRiderMainMonthSelect" class="form-select w-full md:w-auto rounded-lg shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg font-semibold">
-                            <!-- *** 신규: 5월 옵션 추가 *** -->
-                            <option value="5">2025년 5월</option>
-                            <option value="6">2025년 6월</option>
-                            <option value="7">2025년 7월</option>
-                            <option value="8">2025년 8월</option>
-                            <option value="9">2025년 9월</option>
-                            <option value="10">2025년 10월</option>
-                            <option value="11" selected>2025년 11월</option>
-                        </select>
+                    <div class="w-full md:w-auto flex flex-col items-end">
+                        
+                        <!-- 커스텀 드롭다운 (그라이더 - 주황 테마) -->
+                        <div class="relative w-full md:w-56 group">
+                            <!-- 달력 아이콘 -->
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-amber-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select id="gRiderMainMonthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-semibold text-lg cursor-pointer hover:border-amber-400 transition-all">
+                                <option value="5">2025년 5월</option>
+                                <option value="6">2025년 6월</option>
+                                <option value="7">2025년 7월</option>
+                                <option value="8">2025년 8월</option>
+                                <option value="9">2025년 9월</option>
+                                <option value="10">2025년 10월</option>
+                                <option value="11" selected>2025년 11월</option>
+                            </select>
+                            <!-- 화살표 아이콘 -->
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
                         
                         <!-- 요약 카드 컨테이너 (grid) -->
-                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
                             <!-- "누적 인원" 카드 -->
                             <div id="cumulativeSummaryContainerGRider" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
                                 <div class="text-sm font-semibold text-gray-600">총 누적 가입</div>
@@ -168,8 +198,7 @@
                 </div>
             </div>
 
-            <!-- *** 수정: 파이 차트 2-Grid 컨테이너 *** -->
-            <!-- p-6 md:p-10으로 위쪽 line chart div와 간격(padding)을 줌 -->
+            <!-- 파이 차트 2-Grid 컨테이너 -->
             <div class="p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
                 
                 <!-- 좌측: 운송수단별 가입 현황 -->
@@ -204,18 +233,34 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
                         그라이더플러스: 일별 가입 추이
                     </h1>
-                    <div class="w-full md:w-auto text-right">
-                        <select id="gRiderMonthSelect" class="form-select w-full md:w-auto rounded-lg shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg font-semibold">
-                            <option value="6">2025년 6월</option>
-                            <option value="7">2025년 7월</option>
-                            <option value="8">2025년 8월</option>
-                            <option value="9">2025년 9월</option>
-                            <option value="10">2025년 10월</option>
-                            <option value="11" selected>2025년 11월</option>
-                        </select>
+                    <div class="w-full md:w-auto flex flex-col items-end">
+                        
+                        <!-- 커스텀 드롭다운 (그라이더플러스 - 초록 테마) -->
+                        <div class="relative w-full md:w-56 group">
+                            <!-- 달력 아이콘 -->
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-green-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select id="gRiderMonthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-semibold text-lg cursor-pointer hover:border-green-400 transition-all">
+                                <option value="6">2025년 6월</option>
+                                <option value="7">2025년 7월</option>
+                                <option value="8">2025년 8월</option>
+                                <option value="9">2025년 9월</option>
+                                <option value="10">2025년 10월</option>
+                                <option value="11" selected>2025년 11월</option>
+                            </select>
+                            <!-- 화살표 아이콘 -->
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
                         
                         <!-- 요약 카드 컨테이너 (grid) -->
-                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
                              <!-- "누적 인원" 카드 -->
                              <div id="cumulativeSummaryContainerGRiderPlus" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
                                 <div class="text-sm font-semibold text-gray-600">총 누적 가입</div>
@@ -238,8 +283,7 @@
                 </div>
             </div>
 
-            <!-- *** 수정: 파이 차트 2-Grid 컨테이너 *** -->
-            <!-- p-6 md:p-10으로 위쪽 line chart div와 간격(padding)을 줌 -->
+            <!-- 파이 차트 2-Grid 컨테이너 -->
             <div class="p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
 
                 <!-- 좌측: 운송수단별 가입 현황 -->
@@ -268,28 +312,21 @@
 
 
     <script>
-        // *** 오류 수정 ***
-        // DOMContentLoaded 대신 window.load 이벤트를 사용합니다.
-        // window.load는 모든 리소스(CDN 스크립트 포함)가 로드된 후 발생하여,
-        // 플러그인 ReferenceError (찾을 수 없음) 오류를 방지합니다.
         window.addEventListener('load', () => {
 
             // --- 1. 플러그인 등록 ---
-            // *** FIX 1: 플러그인 로드 오류 수정 ***
-            // 플러그인을 개별적으로 확인하고 등록하여, 어느 플러그인이 실패했는지 명확히 알 수 있도록 수정
             try {
-                // window.load를 사용하므로, 스크립트가 로드된 후입니다.
                 let pluginsLoaded = true;
                 if (window.chartjsPluginAnnotation) {
                     Chart.register(window.chartjsPluginAnnotation);
                 } else {
-                    console.warn("Chart.js Annotation plugin (window.chartjsPluginAnnotation) not found.");
+                    console.warn("Chart.js Annotation plugin not found.");
                     pluginsLoaded = false;
                 }
                 if (window.ChartDataLabels) {
                     Chart.register(window.ChartDataLabels);
                 } else {
-                    console.warn("Chart.js DataLabels plugin (window.ChartDataLabels) not found.");
+                    console.warn("Chart.js DataLabels plugin not found.");
                     pluginsLoaded = false;
                 }
                 if (!pluginsLoaded) {
@@ -298,6 +335,11 @@
             } catch (e) {
                 console.error("Chart.js 플러그인 등록에 실패했습니다.", e);
             }
+
+            // *** 네이버 카페 아이콘 이미지 로드 ***
+            const naverCafeIcon = new Image();
+            // 네이버 카페 아이콘 (Base64)
+            naverCafeIcon.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEGklEQVR4nO2ZS2hcVRjHf+fOzCSZyUyTSZ9p06StMU2qaVsV3VhBCxUERdCFIKLQhSgqLlKwG9GF6EIXpSgquhBE3IqKC1GLqI1J0zfTpiaTaTKZNyf3Huf4/86decydTCbJ3JkL/eCwmLn3nvP9zjmfe865YwkhhBBCCCHEnxOqXkAp2bZtW83zPE/TNE/TtJqu6zVd12u6rtV0Xatpmlb1fV/VNK0qpbQ0Tat6nldVFKWqKMq/iqJUnc/n59Lp9Fw+n58bHR2dK+d6y5JAw7btgziO79d1/QBN0w5omrZf17WqaZpW0zStZprmolvXda2aTqfndF2f03V9TlGUOUVR5mZnZ+emp6fnhoeH50q95pIg0Lht2/s1TftR07T9hmHsb2ho2G8YRtUwjKphGFXTNKumadqC29A0bdGtaZpWUxRlTlGUWUVRPs/n85/rur4wMzMzNzIyMjc/P79QynWWBIFG27b3Y4x/MAxjv2EY+5uamvam0+l9hmFUATiOU7Vte1HAtm1P07SqruvVTCYzp2nazLyqKHOapu0XRfHT2dnZueHh4Vy5114SBBq3bXufYRj7DcP4oKamZn9zc/N+wzCqtm17lmV5lmV5tm17lmV5lmV5tm17tm17juNUM5nMnKZpc4qizCqK8pmmaR/rur4wMzMzV8moLAkCjdlsdj/G+EBNTc2BpqamfYZh7C8G37btRaCtW7d6lmV5lmV5tm17juN4mUxmLpPJfK7r+seKonzS2Ni4MDw8vFBOBCwJAs11dXUH6uvrDzQ3N+8zDKNqMfiO43iWZVm2bVuO41iO41iWZVmWZXm2bXuZTGZO07RPFEX5qLa2dmFkZGShnAhYEgSazc3NB5qbmw/U1tbuMwzDsyzLchzHchzHchzHchzHchzHchzHchzHymQyc6qqzquq+pGu6x+2tLQsDA0NLZQTgf8l0GwYxp7a2tp9lmV5juNYjuNYjuNYjuNYjuNYjuNYjuNYjuNYmUxmLpPJzKmquqCq6keGYXw0MjKyUE4ELAkCzYaGhgNNTU37LMvyHMexHMexHMexHMexHMexHMexLMuyLMuyHMexMpnMnKqqC4qiLKiqqjc0NCwMDw8vlBMBf71A/W3b3q9p2gHDMPY3NjbuNwzDcxzHsizLs23bsyzLsizLs23bs23b8zzPq66urnY8z/M8z/M8z/M8z/M8z6uurvaqV/Q8z/M8z/M8z7Isy8pkMnOKosypqjqfTqcX6urqFoaGhuZKvd6SINDY3Nzc39jYuN8wjKrjOJ7jOJ7jOJ7jOJ7jOJ7jOJ7jOJ7neY7jeI7jeI7jeI7jeI7jeI7jeI7jeI7jWI7jWI7jWJ7neZ7neZ7neZZlWYZhWIqizCmKMq+q6oKu63Oqqs6l0+m5kZGRuXKulRBCCCGEEEIIIf5d/AGjIF+v+Y9uYAAAAABJRU5ErkJggg==';
 
             // --- 2. 헬퍼 함수 및 데이터 저장소 ---
             const sum = (arr) => arr.reduce((a, b) => a + b, 0);
@@ -323,7 +365,6 @@
                     labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'],
                     completions: [6, 1, 6, 2, 8, 3, 7, 4, 6, 8, 9, 6, 12, 4, 9, 8, 14, 11, 15, 10, 14, 19, 28, 28, 22, 21, 13, 13, 30, 70],
                     title: '2025년 9월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-09)', 
-                    // *** 신규: 9월 23일 Annotation 추가 ***
                     annotations: { 
                         line1: { 
                             type: 'line', 
@@ -348,14 +389,31 @@
                     labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'],
                     completions: [163, 114, 95, 87, 39, 36, 30, 30, 28, 32, 30, 38, 44, 41, 63, 65, 106, 112, 94, 183, 210, 258, 279, 275, 242, 189, 176, 177, 421, 333, 192],
                     title: '2025년 10월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-10)',
-                    annotations: { line1: { type: 'line', scaleID: 'x', value: '10-19', borderColor: 'rgb(234, 179, 8)', borderWidth: 3, label: { content: '네이버카페 광고 시작', display: true, position: 'start', backgroundColor: 'rgba(234, 179, 8, 0.8)', color: 'black', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } }
+                    annotations: { 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
+                    }
                 },
-                // *** 11월 데이터 전체 업데이트 ***
                 '11': {
                     labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'],
                     completions: [178, 125, 634, 607, 409, 308, 224, 152, 103, 138, 135, 120, 90, 103, 60, 91, 69, 79, 65, 63, 48, 61, 52, 61, 62, 82, 65, 56, 76, 74],
                     title: '2025년 11월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-11)',
-                    annotations: {} // 11월은 Annotation 없음
+                    annotations: {}
                 }
             };
 
@@ -364,57 +422,51 @@
             const totalAug = sum(dataStore['8'].completions);
             const totalSept = sum(dataStore['9'].completions);
             const totalOct = sum(dataStore['10'].completions);
-            const totalNov = sum(dataStore['11'].completions); // *** 업데이트된 합계 ***
+            const totalNov = sum(dataStore['11'].completions); 
             
             const growthJulyVsJune = totalJune > 0 ? ((totalJuly - totalJune) / totalJune) * 100 : Infinity;
             const growthAugVsJuly = totalJuly > 0 ? ((totalAug - totalJuly) / totalJuly) * 100 : Infinity;
             const growthSeptVsAug = totalAug > 0 ? ((totalSept - totalAug) / totalAug) * 100 : Infinity;
             const growthOctVsSept = totalSept > 0 ? ((totalOct - totalSept) / totalSept) * 100 : Infinity;
-            const growthNovVsOct = totalOct > 0 ? ((totalNov - totalOct) / totalOct) * 100 : Infinity; // *** 업데이트된 성장률 ***
+            const growthNovVsOct = totalOct > 0 ? ((totalNov - totalOct) / totalOct) * 100 : Infinity;
 
             dataStore['6'].total = totalJune; dataStore['6'].growth = null; 
             dataStore['7'].total = totalJuly; dataStore['7'].growth = growthJulyVsJune; dataStore['7'].prevMonthName = '6월';
             dataStore['8'].total = totalAug; dataStore['8'].growth = growthAugVsJuly; dataStore['8'].prevMonthName = '7월';
             dataStore['9'].total = totalSept; dataStore['9'].growth = growthSeptVsAug; dataStore['9'].prevMonthName = '8월';
             dataStore['10'].total = totalOct; dataStore['10'].growth = growthOctVsSept; dataStore['10'].prevMonthName = '9월';
-            dataStore['11'].total = totalNov; dataStore['11'].growth = growthNovVsOct; dataStore['11'].prevMonthName = '10월'; // dataStore['11'].note 삭제 (전체 데이터이므로)
+            dataStore['11'].total = totalNov; dataStore['11'].growth = growthNovVsOct; dataStore['11'].prevMonthName = '10월';
 
-            // 2-1-B. 안전교육 누적 합계 계산
-            const totalSafetyCumulative = totalJune + totalJuly + totalAug + totalSept + totalOct + totalNov; // *** 신규 (totalNov 추가) ***
-
-            // 2-2. 그라이더 (Main) 데이터 (Tab 2) - (image_1950a9, 1950c6, 1950e2, 18c5f9)
-            // 일별 데이터 (6월~11월)
-            // *** 데이터 전체 갱신 ***
+            // 2-2. 그라이더 (Main) 데이터 (Tab 2)
             const gRiderMainDailyDataStore = {
                 '5': { 
                     labels: ['05-01', '05-02', '05-03', '05-04', '05-05', '05-06', '05-07', '05-08', '05-09', '05-10', '05-11', '05-12', '05-13', '05-14', '05-15', '05-16', '05-17', '05-18', '05-19', '05-20', '05-21', '05-22', '05-23', '05-24', '05-25', '05-26', '05-27', '05-28', '05-29', '05-30', '05-31'], 
                     completions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                     title: '2025년 5월 일별 가입 인원',
-                    annotations: {} // 5월은 Annotation 없음
+                    annotations: {}
                 },
                 '6': { 
                     labels: ['06-01', '06-02', '06-03', '06-04', '06-05', '06-06', '06-07', '06-08', '06-09', '06-10', '06-11', '06-12', '06-13', '06-14', '06-15', '06-16', '06-17', '06-18', '06-19', '06-20', '06-21', '06-22', '06-23', '06-24', '06-25', '06-26', '06-27', '06-28', '06-29', '06-30'], 
                     completions: [0, 0, 0, 12, 5, 2, 4, 1, 2, 3, 6, 7, 2, 1, 3, 7, 6, 6, 8, 1, 3, 0, 4, 5, 9, 2, 5, 1, 2, 6], 
                     title: '2025년 6월 일별 가입 인원',
-                    annotations: {} // 6월은 Annotation 없음
+                    annotations: {}
                 },
                 '7': { 
                     labels: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07', '07-08', '07-09', '07-10', '07-11', '07-12', '07-13', '07-14', '07-15', '07-16', '07-17', '07-18', '07-19', '07-20', '07-21', '07-22', '07-23', '07-24', '07-25', '07-26', '07-27', '07-28', '07-29', '07-30', '07-31'], 
                     completions: [6, 7, 11, 14, 11, 20, 13, 6, 5, 2, 11, 4, 8, 4, 9, 10, 6, 9, 7, 5, 7, 8, 7, 7, 11, 5, 6, 9, 10, 5, 2], 
                     title: '2025년 7월 일별 가입 인원',
-                    annotations: {} // 7월은 Annotation 없음
+                    annotations: {}
                 },
                 '8': { 
                     labels: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07', '08-08', '08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15', '08-16', '08-17', '08-18', '08-19', '08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26', '08-27', '08-28', '08-29', '08-30', '08-31'], 
                     completions: [6, 4, 5, 6, 14, 6, 10, 6, 7, 5, 5, 10, 2, 8, 11, 13, 7, 6, 11, 13, 15, 21, 5, 7, 9, 5, 8, 15, 5, 5, 7], 
                     title: '2025년 8월 일별 가입 인원',
-                    annotations: {} // 8월은 Annotation 없음
+                    annotations: {}
                 },
                 '9': { 
                     labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'], 
                     completions: [7, 6, 8, 12, 14, 4, 11, 12, 14, 14, 14, 12, 20, 11, 21, 20, 10, 22, 21, 29, 14, 46, 48, 38, 34, 39, 28, 14, 87, 170], 
                     title: '2025년 9월 일별 가입 인원',
-                    // *** 수정: 9월 Annotation 추가 ***
                     annotations: { 
                         line1: { type: 'line', scaleID: 'x', value: '09-23', borderColor: 'rgb(220, 38, 38)', borderWidth: 3, label: { content: '그라이더플러스 시청제외', display: true, position: 'end', backgroundColor: 'rgba(220, 38, 38, 0.8)', color: 'white', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
                     }
@@ -423,30 +475,42 @@
                     labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '08-09', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'], 
                     completions: [338, 224, 148, 117, 57, 29, 38, 57, 38, 46, 67, 76, 76, 83, 110, 147, 143, 133, 145, 251, 229, 416, 372, 496, 287, 203, 282, 239, 996, 400, 202], 
                     title: '2025년 10월 일별 가입 인원',
-                    // *** 수정: 10월 Annotation 추가 ***
                     annotations: { 
-                        line1: { type: 'line', scaleID: 'x', value: '10-19', borderColor: 'rgb(234, 179, 8)', borderWidth: 3, label: { content: '네이버카페 광고 시작', display: true, position: 'start', backgroundColor: 'rgba(234, 179, 8, 0.8)', color: 'black', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
                     }
                 },
-                // *** 11월 데이터 전체 업데이트 (그라이더) ***
                 '11': { 
                     labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'], 
                     completions: [237, 218, 1830, 841, 567, 392, 279, 152, 116, 193, 187, 166, 117, 147, 115, 99, 92, 109, 96, 81, 83, 71, 66, 103, 91, 95, 47, 76, 75, 76], 
                     title: '2025년 11월 일별 가입 인원',
-                    annotations: {} // 11월은 Annotation 없음
+                    annotations: {}
                 }
             };
 
-            // *** 데이터 갱신: 5월 추가, 나머지 월 갱신 ***
-            const gRiderMainTotalMay = sum(gRiderMainDailyDataStore['5'].completions); // 3
-            const gRiderMainTotalJune = sum(gRiderMainDailyDataStore['6'].completions); // 114
-            const gRiderMainTotalJuly = sum(gRiderMainDailyDataStore['7'].completions); // 247
-            const gRiderMainTotalAug = sum(gRiderMainDailyDataStore['8'].completions); // 272
-            const gRiderMainTotalSept = sum(gRiderMainDailyDataStore['9'].completions); // 800
-            const gRiderMainTotalOct = sum(gRiderMainDailyDataStore['10'].completions); // 6045
-            const gRiderMainTotalNov = sum(gRiderMainDailyDataStore['11'].completions); // 6617 (업데이트됨)
+            const gRiderMainTotalMay = sum(gRiderMainDailyDataStore['5'].completions); 
+            const gRiderMainTotalJune = sum(gRiderMainDailyDataStore['6'].completions); 
+            const gRiderMainTotalJuly = sum(gRiderMainDailyDataStore['7'].completions); 
+            const gRiderMainTotalAug = sum(gRiderMainDailyDataStore['8'].completions); 
+            const gRiderMainTotalSept = sum(gRiderMainDailyDataStore['9'].completions); 
+            const gRiderMainTotalOct = sum(gRiderMainDailyDataStore['10'].completions); 
+            const gRiderMainTotalNov = sum(gRiderMainDailyDataStore['11'].completions); 
 
-            // *** 갱신된 성장률 계산 ***
             const gRiderMainGrowthJuneVsMay = gRiderMainTotalMay > 0 ? ((gRiderMainTotalJune - gRiderMainTotalMay) / gRiderMainTotalMay) * 100 : Infinity;
             const gRiderMainGrowthJulyVsJune = gRiderMainTotalJune > 0 ? ((gRiderMainTotalJuly - gRiderMainTotalJune) / gRiderMainTotalJune) * 100 : Infinity;
             const gRiderMainGrowthAugVsJuly = gRiderMainTotalJuly > 0 ? ((gRiderMainTotalAug - gRiderMainTotalJuly) / gRiderMainTotalJuly) * 100 : Infinity;
@@ -454,42 +518,32 @@
             const gRiderMainGrowthOctVsSept = gRiderMainTotalSept > 0 ? ((gRiderMainTotalOct - gRiderMainTotalSept) / gRiderMainTotalSept) * 100 : Infinity;
             const gRiderMainGrowthNovVsOct = gRiderMainTotalOct > 0 ? ((gRiderMainTotalNov - gRiderMainTotalOct) / gRiderMainTotalOct) * 100 : Infinity;
 
-            // *** 데이터 저장소에 갱신된 정보 주입 ***
             gRiderMainDailyDataStore['5'].total = gRiderMainTotalMay; gRiderMainDailyDataStore['5'].growth = null; gRiderMainDailyDataStore['5'].prevMonthName = '4월';
             gRiderMainDailyDataStore['6'].total = gRiderMainTotalJune; gRiderMainDailyDataStore['6'].growth = gRiderMainGrowthJuneVsMay; gRiderMainDailyDataStore['6'].prevMonthName = '5월';
             gRiderMainDailyDataStore['7'].total = gRiderMainTotalJuly; gRiderMainDailyDataStore['7'].growth = gRiderMainGrowthJulyVsJune; gRiderMainDailyDataStore['7'].prevMonthName = '6월';
             gRiderMainDailyDataStore['8'].total = gRiderMainTotalAug; gRiderMainDailyDataStore['8'].growth = gRiderMainGrowthAugVsJuly; gRiderMainDailyDataStore['8'].prevMonthName = '7월';
             gRiderMainDailyDataStore['9'].total = gRiderMainTotalSept; gRiderMainDailyDataStore['9'].growth = gRiderMainGrowthSeptVsAug; gRiderMainDailyDataStore['9'].prevMonthName = '8월';
             gRiderMainDailyDataStore['10'].total = gRiderMainTotalOct; gRiderMainDailyDataStore['10'].growth = gRiderMainGrowthOctVsSept; gRiderMainDailyDataStore['10'].prevMonthName = '9월';
-            gRiderMainDailyDataStore['11'].total = gRiderMainTotalNov; gRiderMainDailyDataStore['11'].growth = gRiderMainGrowthNovVsOct; gRiderMainDailyDataStore['11'].prevMonthName = '10월'; // note 삭제 (전체 데이터 반영됨)
+            gRiderMainDailyDataStore['11'].total = gRiderMainTotalNov; gRiderMainDailyDataStore['11'].growth = gRiderMainGrowthNovVsOct; gRiderMainDailyDataStore['11'].prevMonthName = '10월';
 
-            // '그라이더' 운송수단별 파이 차트 데이터 (Tab 2) - (image_18c5f9.png)
-            // *** 데이터 업데이트: image_7744bd.png 반영 ***
-            // 다마스 16, 도보 264, 승용차 1491, 오토바이 10616, 자전거 313, 전기오토바이 2002, 킥보드 15
             const gRiderMainVehicleData = {
                 labels: ['오토바이', '전기오토바이', '승용차', '자전거', '도보', '다마스', '킥보드'],
                 datasets: [{
                     label: '운송수단별 가입자 수',
                     data: [10616, 2002, 1491, 313, 264, 16, 15], 
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',  // 오토바이 (Blue)
-                        'rgba(13, 148, 136, 0.8)',  // 전기오토바이 (Teal - New)
-                        'rgba(16, 185, 129, 0.8)',  // 승용차 (Green)
-                        'rgba(234, 179, 8, 0.8)',   // 자전거 (Yellow)
-                        'rgba(249, 115, 22, 0.8)',  // 도보 (Orange)
-                        'rgba(239, 68, 68, 0.8)',   // 다마스 (Red)
-                        'rgba(168, 85, 247, 0.8)'   // 킥보드 (Purple)
+                        'rgba(59, 130, 246, 0.8)',  
+                        'rgba(13, 148, 136, 0.8)',  
+                        'rgba(16, 185, 129, 0.8)',  
+                        'rgba(234, 179, 8, 0.8)',   
+                        'rgba(249, 115, 22, 0.8)',  
+                        'rgba(239, 68, 68, 0.8)',   
+                        'rgba(168, 85, 247, 0.8)'   
                     ],
                     borderColor: '#ffffff', borderWidth: 2
                 }]
             };
 
-            // 2-2-B. 그라이더 누적 합계 계산
-            const totalGRiderCumulative = sum(gRiderMainVehicleData.datasets[0].data);
-
-            // 2-2-C. 그라이더 안전교육 수료 현황 파이 차트 데이터 (Tab 2)
-            // *** 데이터 업데이트: image_77447e.png 반영 ***
-            // 미수료 5934, 수료 8783
             const gRiderSafetyData = {
                 labels: ['수료', '미수료'],
                 datasets: [{
@@ -500,35 +554,30 @@
                 }]
             };
             
-            // --- *** FIX 2: '그라이더플러스' (Tab 3)의 누락된 데이터 블록 복원 *** ---
-
-            // 2-3. 그라이더플러스 데이터 (Tab 3) - (image_1b8057 ~ 1b8379)
-            // (이전 버전의 데이터를 기반으로 복원)
-            // *** 데이터 전체 갱신 ***
+            // 2-3. 그라이더플러스 데이터 (Tab 3)
             const gRiderDailyDataStore = {
                 '6': { 
                     labels: ['06-01', '06-02', '06-03', '06-04', '06-05', '06-06', '06-07', '06-08', '06-09', '06-10', '06-11', '06-12', '06-13', '06-14', '06-15', '06-16', '06-17', '06-18', '06-19', '06-20', '06-21', '06-22', '06-23', '06-24', '06-25', '06-26', '06-27', '06-28', '06-29', '06-30'], 
                     completions: [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1], 
                     title: '2025년 6월 일별 가입 인원',
-                    annotations: {} // 6월은 Annotation 없음
+                    annotations: {}
                 },
                 '7': { 
                     labels: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07', '07-08', '07-09', '07-10', '07-11', '07-12', '07-13', '07-14', '07-15', '07-16', '07-17', '07-18', '07-19', '07-20', '07-21', '07-22', '07-23', '07-24', '07-25', '07-26', '07-27', '07-28', '07-29', '07-30', '07-31'], 
                     completions: [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], 
                     title: '2025년 7월 일별 가입 인원',
-                    annotations: {} // 7월은 Annotation 없음
+                    annotations: {}
                 },
                 '8': { 
                     labels: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07', '08-08', '08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15', '08-16', '08-17', '08-18', '08-19', '08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26', '08-27', '08-28', '08-29', '08-30', '08-31'], 
                     completions: [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1, 0, 0, 1, 0, 1, 3, 1, 0, 2, 1, 17, 22, 11, 3, 0], 
                     title: '2025년 8월 일별 가입 인원',
-                    annotations: {} // 8월은 Annotation 없음
+                    annotations: {}
                 },
                 '9': { 
                     labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'], 
                     completions: [8, 7, 15, 16, 26, 7, 20, 15, 30, 25, 29, 12, 20, 1, 24, 34, 29, 52, 28, 28, 22, 66, 80, 60, 34, 48, 37, 13, 29, 73], 
                     title: '2025년 9월 일별 가입 인원',
-                    // *** 수정: 9월 Annotation 추가 ***
                     annotations: { 
                         line1: { type: 'line', scaleID: 'x', value: '09-23', borderColor: 'rgb(220, 38, 38)', borderWidth: 3, label: { content: '그라이더플러스 시청제외', display: true, position: 'end', backgroundColor: 'rgba(220, 38, 38, 0.8)', color: 'white', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
                     }
@@ -537,73 +586,71 @@
                     labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'], 
                     completions: [67, 62, 31, 19, 14, 4, 4, 30, 15, 23, 27, 40, 44, 106, 128, 241, 126, 75, 46, 114, 166, 117, 122, 76, 45, 40, 38, 68, 89, 57, 38], 
                     title: '2025년 10월 일별 가입 인원',
-                    // *** 수정: 10월 Annotation 추가 ***
                     annotations: { 
-                        line1: { type: 'line', scaleID: 'x', value: '10-19', borderColor: 'rgb(234, 179, 8)', borderWidth: 3, label: { content: '네이버카페 광고 시작', display: true, position: 'start', backgroundColor: 'rgba(234, 179, 8, 0.8)', color: 'black', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
                     }
                 },
-                // *** 11월 데이터 전체 업데이트 (그라이더플러스) ***
-                // image_773db4.png 데이터 반영 (11-01 ~ 11-30)
                 '11': { 
                     labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'], 
                     completions: [18, 19, 124, 84, 57, 48, 51, 19, 8, 17, 20, 16, 37, 20, 5, 16, 13, 12, 10, 4, 8, 10, 4, 17, 5, 4, 4, 7, 3, 3], 
                     title: '2025년 11월 일별 가입 인원',
-                    annotations: {} // 11월은 Annotation 없음
+                    annotations: {}
                 }
             };
             
-            // '그라이더플러스' (Tab 3) 월별 합계
-            // *** 데이터 갱신 ***
-            const gRiderTotalJune = sum(gRiderDailyDataStore['6'].completions); // 7
-            const gRiderTotalJuly = sum(gRiderDailyDataStore['7'].completions); // 9
-            const gRiderTotalAug = sum(gRiderDailyDataStore['8'].completions); // 69
-            const gRiderTotalSept = sum(gRiderDailyDataStore['9'].completions); // 827
-            const gRiderTotalOct = sum(gRiderDailyDataStore['10'].completions); // 2072
-            const gRiderTotalNov = sum(gRiderDailyDataStore['11'].completions); // 664 (업데이트됨)
+            const gRiderTotalJune = sum(gRiderDailyDataStore['6'].completions); 
+            const gRiderTotalJuly = sum(gRiderDailyDataStore['7'].completions); 
+            const gRiderTotalAug = sum(gRiderDailyDataStore['8'].completions); 
+            const gRiderTotalSept = sum(gRiderDailyDataStore['9'].completions); 
+            const gRiderTotalOct = sum(gRiderDailyDataStore['10'].completions); 
+            const gRiderTotalNov = sum(gRiderDailyDataStore['11'].completions); 
             
-            // '그라이더플러스' (Tab 3) 성장률 계산
-            // *** 데이터 갱신 ***
-            const gRiderGrowthJulyVsJune = gRiderTotalJune > 0 ? ((gRiderTotalJuly - gRiderTotalJune) / gRiderTotalJune) * 100 : Infinity; // 28.57...
-            const gRiderGrowthAugVsJuly = gRiderTotalJuly > 0 ? ((gRiderTotalAug - gRiderTotalJuly) / gRiderTotalJuly) * 100 : Infinity; // 666.66...
-            const gRiderGrowthSeptVsAug = gRiderTotalAug > 0 ? ((gRiderTotalSept - gRiderTotalAug) / gRiderTotalAug) * 100 : Infinity; // 1098.55...
-            const gRiderGrowthOctVsSept = gRiderTotalSept > 0 ? ((gRiderTotalOct - gRiderTotalSept) / gRiderTotalSept) * 100 : Infinity; // 150.54...
-            const gRiderGrowthNovVsOct = gRiderTotalOct > 0 ? ((gRiderTotalNov - gRiderTotalOct) / gRiderTotalOct) * 100 : Infinity; // -67.95... (감소)
+            const gRiderGrowthJulyVsJune = gRiderTotalJune > 0 ? ((gRiderTotalJuly - gRiderTotalJune) / gRiderTotalJune) * 100 : Infinity;
+            const gRiderGrowthAugVsJuly = gRiderTotalJuly > 0 ? ((gRiderTotalAug - gRiderTotalJuly) / gRiderTotalJuly) * 100 : Infinity;
+            const gRiderGrowthSeptVsAug = gRiderTotalAug > 0 ? ((gRiderTotalSept - gRiderTotalAug) / gRiderTotalAug) * 100 : Infinity;
+            const gRiderGrowthOctVsSept = gRiderTotalSept > 0 ? ((gRiderTotalOct - gRiderTotalSept) / gRiderTotalSept) * 100 : Infinity;
+            const gRiderGrowthNovVsOct = gRiderTotalOct > 0 ? ((gRiderTotalNov - gRiderTotalOct) / gRiderTotalOct) * 100 : Infinity;
 
-            // '그라이더플러스' (Tab 3) 데이터 저장소에 정보 주입
-            // *** 데이터 갱신 ***
             gRiderDailyDataStore['6'].total = gRiderTotalJune; gRiderDailyDataStore['6'].growth = null;
             gRiderDailyDataStore['7'].total = gRiderTotalJuly; gRiderDailyDataStore['7'].growth = gRiderGrowthJulyVsJune; gRiderDailyDataStore['7'].prevMonthName = '6월';
             gRiderDailyDataStore['8'].total = gRiderTotalAug; gRiderDailyDataStore['8'].growth = gRiderGrowthAugVsJuly; gRiderDailyDataStore['8'].prevMonthName = '7월';
             gRiderDailyDataStore['9'].total = gRiderTotalSept; gRiderDailyDataStore['9'].growth = gRiderGrowthSeptVsAug; gRiderDailyDataStore['9'].prevMonthName = '8월';
             gRiderDailyDataStore['10'].total = gRiderTotalOct; gRiderDailyDataStore['10'].growth = gRiderGrowthOctVsSept; gRiderDailyDataStore['10'].prevMonthName = '9월';
-            gRiderDailyDataStore['11'].total = gRiderTotalNov; gRiderDailyDataStore['11'].growth = gRiderGrowthNovVsOct; gRiderDailyDataStore['11'].prevMonthName = '10월'; // note 삭제
+            gRiderDailyDataStore['11'].total = gRiderTotalNov; gRiderDailyDataStore['11'].growth = gRiderGrowthNovVsOct; gRiderDailyDataStore['11'].prevMonthName = '10월';
 
-            // 그라이더플러스 파이 차트 데이터 (Tab 3) - (image_0debe0.png)
-            // *** 데이터 업데이트: image_773cdc.png 반영 ***
-            // 다마스 1, 도보 16, 승용차 74, 오토바이 3203, 자전거 42, 전기오토바이 343
             const gRiderVehicleData = {
                 labels: ['오토바이', '전기오토바이', '승용차', '자전거', '도보', '다마스'],
                 datasets: [{
                     label: '운송수단별 가입자 수',
                     data: [3203, 343, 74, 42, 16, 1],
                     backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',  // 오토바이 (Blue)
-                        'rgba(13, 148, 136, 0.8)',  // 전기오토바이 (Teal)
-                        'rgba(16, 185, 129, 0.8)',  // 승용차 (Green)
-                        'rgba(234, 179, 8, 0.8)',   // 자전거 (Yellow)
-                        'rgba(249, 115, 22, 0.8)',  // 도보 (Orange)
-                        'rgba(239, 68, 68, 0.8)'    // 다마스 (Red)
+                        'rgba(59, 130, 246, 0.8)',  
+                        'rgba(13, 148, 136, 0.8)',  
+                        'rgba(16, 185, 129, 0.8)',  
+                        'rgba(234, 179, 8, 0.8)',   
+                        'rgba(249, 115, 22, 0.8)',  
+                        'rgba(239, 68, 68, 0.8)'    
                     ],
                     borderColor: '#ffffff', borderWidth: 2
                 }]
             };
 
-            // 2-3-B. 그라이더플러스 누적 합계 계산
-            const totalGRiderPlusCumulative = sum(gRiderVehicleData.datasets[0].data);
-
-            // 2-3-C. 그라이더플러스 안전교육 수료 현황 파이 차트 데이터 (Tab 3)
-            // *** 데이터 업데이트: image_773cd6.png 반영 ***
-            // 미수료 2990, 수료 689
             const gRiderPlusSafetyData = {
                 labels: ['수료', '미수료'],
                 datasets: [{
@@ -614,24 +661,21 @@
                 }]
             };
             
-            // --- (여기까지 FIX 2) ---
-
-
             // --- 3. 차트 변수 및 DOM 요소 ---
             let safetyTrainingChart;
-            let gRiderDailySignupChart; // 그라이더플러스 라인
-            let gRiderVehiclePieChart; // 그라이더플러스 파이
-            let gRiderMainDailySignupChart; // '그라이더' 라인 차트
-            let gRiderMainVehiclePieChart; // '그라이더' 파이 차트
-            let gRiderSafetyPieChart; // *** 신규: 그라이더 수료/미수료 파이 차트 ***
-            let gRiderPlusSafetyPieChart; // *** 신규: 그라이더플러스 수료/미수료 파이 차트 ***
+            let gRiderDailySignupChart; 
+            let gRiderVehiclePieChart; 
+            let gRiderMainDailySignupChart; 
+            let gRiderMainVehiclePieChart; 
+            let gRiderSafetyPieChart; 
+            let gRiderPlusSafetyPieChart; 
 
             let gRiderLineChartInitialized = false;
             let gRiderPieChartInitialized = false;
             let gRiderMainLineChartInitialized = false; 
             let gRiderMainPieChartInitialized = false;
-            let gRiderSafetyPieChartInitialized = false; // *** 신규 ***
-            let gRiderPlusSafetyPieChartInitialized = false; // *** 신규 ***
+            let gRiderSafetyPieChartInitialized = false; 
+            let gRiderPlusSafetyPieChartInitialized = false; 
 
             // 안전교육
             const safetyCtx = document.getElementById('safetyTrainingChart').getContext('2d');
@@ -641,19 +685,37 @@
             const gRiderMainLineCtx = document.getElementById('gRiderMainDailySignupChart').getContext('2d');
             const gRiderMainMonthSelect = document.getElementById('gRiderMainMonthSelect');
             const gRiderMainPieCtx = document.getElementById('gRiderMainVehiclePieChart').getContext('2d');
-            const gRiderSafetyPieCtx = document.getElementById('gRiderSafetyPieChart').getContext('2d'); // *** 신규 ***
+            const gRiderSafetyPieCtx = document.getElementById('gRiderSafetyPieChart').getContext('2d'); 
 
             // 그라이더플러스
             const gRiderLineCtx = document.getElementById('gRiderDailySignupChart').getContext('2d');
             const gRiderMonthSelect = document.getElementById('gRiderMonthSelect');
             const gRiderPieCtx = document.getElementById('gRiderVehiclePieChart').getContext('2d');
-            const gRiderPlusSafetyPieCtx = document.getElementById('gRiderPlusSafetyPieChart').getContext('2d'); // *** 신규 ***
+            const gRiderPlusSafetyPieCtx = document.getElementById('gRiderPlusSafetyPieChart').getContext('2d'); 
 
             // 네비게이션
             const tabButtons = document.querySelectorAll('.tab-button');
             const reportSections = document.querySelectorAll('.report-section');
 
-            
+            // *** 네이버 아이콘 그리기 플러그인 정의 ***
+            const naverIconPlugin = {
+                id: 'naverIconPlugin',
+                afterDatasetsDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const xAxis = chart.scales.x;
+                    // '10-19' 라벨의 위치 찾기
+                    const x = xAxis.getPixelForValue('10-19');
+                    
+                    // 해당 x값이 차트 영역 내에 있고 유효하다면
+                    if (x && x >= chart.chartArea.left && x <= chart.chartArea.right) {
+                        const y = chart.chartArea.top + 33; 
+                        const iconSize = 20;
+                        // 아이콘 그리기
+                        ctx.drawImage(naverCafeIcon, x - 76, y - 10, iconSize, iconSize);
+                    }
+                }
+            };
+
             // --- 4. 차트 렌더링 함수 ---
 
             // 4-1. 안전교육 차트 렌더링
@@ -662,14 +724,21 @@
                     safetyTrainingChart.destroy();
                 }
                 const chartData = dataStore[month];
+                
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
+
                 safetyTrainingChart = new Chart(safetyCtx, {
                     type: 'line',
+                    plugins: localPlugins, 
                     data: {
                         labels: chartData.labels,
                         datasets: [{
                             label: '일별 수료 인원 (명)',
                             data: chartData.completions,
-                            fill: true, // 영역 채우기
+                            fill: true, 
                             borderColor: 'rgb(59, 130, 246)',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             pointBorderColor: 'rgb(59, 130, 246)',
@@ -698,7 +767,7 @@
                             },
                             annotation: { annotations: chartData.annotations },
                             datalabels: {
-                                display: true, // 50명 이상 조건을 제거하고 'true'로 설정하여 모두 표시
+                                display: true,
                                 align: 'top', anchor: 'end', offset: 6, 
                                 font: { weight: '500', size: 11 },
                                 color: '#1f2937', 
@@ -707,7 +776,7 @@
                         },
                         scales: {
                             x: { title: { display: true, text: chartData.xLabel, font: { size: 14, weight: '500' } }, grid: { display: false } },
-                            y: { title: { display: true, text: '수료 인원 (명)', font: { size: 14, weight: '500' } }, beginAtZero: true, max: 1000 } // Y축 최대 1000 고정
+                            y: { title: { display: true, text: '수료 인원 (명)', font: { size: 14, weight: '500' } }, beginAtZero: true, max: 1000 } 
                         },
                         interaction: { intersect: false, mode: 'index' }
                     }
@@ -719,10 +788,8 @@
                 const data = dataStore[month];
                 const totalString = data.total.toLocaleString('ko-KR'); 
                 
-                // 월별 총계 업데이트
                 document.getElementById('monthlyTotalSafety').innerText = totalString + ' 명';
 
-                // 성장률 업데이트
                 let growthHTML = '';
                 if (data.growth !== null && isFinite(data.growth)) {
                     const growthString = data.growth.toFixed(1); 
@@ -738,12 +805,10 @@
                 }
                 document.getElementById('monthlyGrowthSafety').innerHTML = growthHTML;
 
-                // --- 누적 합계 동적 업데이트 (수정됨) ---
                 let cumulativeTotal = 0;
-                let cumulativeLabel = "(6월)"; // 기본값
-                const monthNum = parseInt(month, 10); // *** F1X: 문자열을 숫자로 변환 ***
+                let cumulativeLabel = "(6월)"; 
+                const monthNum = parseInt(month, 10); 
 
-                // 선택된 월(month)은 문자열이므로 비교
                 if (monthNum >= 6) cumulativeTotal += totalJune;
                 if (monthNum >= 7) cumulativeTotal += totalJuly;
                 if (monthNum >= 8) cumulativeTotal += totalAug;
@@ -751,23 +816,15 @@
                 if (monthNum >= 10) cumulativeTotal += totalOct;
                 if (monthNum >= 11) cumulativeTotal += totalNov; 
                 
-                // 누적 기간 레이블 업데이트
                 if (monthNum > 6) {
                     cumulativeLabel = `(6월~${month}월)`;
                 }
-                // *** 신규: 11월 노트 추가 ***
-                if (monthNum == 11 && data.note) {
-                    cumulativeLabel = `(6월~${month}월 ${data.note})`;
-                }
 
-                // 누적 카드 DOM 업데이트
                 document.getElementById('cumulativeTotalSafety').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
                 document.querySelector('#cumulativeSummaryContainerSafety .text-md').innerText = cumulativeLabel;
 
-                // --- *** 신규: 교육수료비용 계산 *** ---
                 const costPerPerson = 2000;
                 const monthlyCost = data.total * costPerPerson;
-                // *** 수정: "원" 글자가 줄바꿈되지 않도록 innerHTML과 Tailwind HElper(whitespace-nowrap) 사용 ***
                 document.getElementById('monthlyCostSafety').innerHTML = `<span class="whitespace-nowrap">${monthlyCost.toLocaleString('ko-KR')} 원</span>`;
             }
 
@@ -777,19 +834,23 @@
                     gRiderMainDailySignupChart.destroy();
                 }
                 const chartData = gRiderMainDailyDataStore[month];
-                
-                // 요청사항: Y축 최대값 고정 (250으로 설정)
-                const yMax = 2000; // *** 데이터 갱신으로 11/03일 1858명이 찍혔으므로 Y축 상향 ***
+                const yMax = 2000; 
+
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
 
                 gRiderMainDailySignupChart = new Chart(gRiderMainLineCtx, {
                     type: 'line',
+                    plugins: localPlugins, 
                     data: {
                         labels: chartData.labels,
                         datasets: [{
                             label: '일별 가입 인원 (명)',
                             data: chartData.completions,
-                            fill: true, // 영역 채우기
-                            borderColor: 'rgb(217, 119, 6)', // Amber 600
+                            fill: true, 
+                            borderColor: 'rgb(217, 119, 6)', 
                             backgroundColor: 'rgba(217, 119, 6, 0.1)',
                             tension: 0.1,
                             pointRadius: 4,
@@ -800,22 +861,21 @@
                         responsive: true,
                         plugins: {
                             title: { display: true, text: chartData.title, font: { size: 18, weight: '600' }, padding: { top: 10, bottom: 20 } },
-                            tooltip: { mode: 'index', intersect: false }, // *** 수정됨 ***
+                            tooltip: { mode: 'index', intersect: false }, 
                             datalabels: {
-                                display: true, // 50명 이상 조건을 제거하고 'true'로 설정하여 모두 표시
+                                display: true, 
                                 align: 'top', offset: 6,
                                 font: { weight: '500', size: 11 },
                                 color: '#1f2937'
                             },
-                            // *** 수정: Annotation 플러그인 추가 ***
                             annotation: { 
-                                annotations: chartData.annotations || {} // 해당 월에 annotations이 없으면 빈 객체 사용
+                                annotations: chartData.annotations || {} 
                             }
                         },
                         scales: {
                             y: { beginAtZero: true, max: yMax, title: { display: true, text: '가입 인원 (명)' } }
                         },
-                        interaction: { intersect: false, mode: 'index' } // *** 신규 ***
+                        interaction: { intersect: false, mode: 'index' } 
                     }
                 });
             }
@@ -825,10 +885,8 @@
                 const data = gRiderMainDailyDataStore[month];
                 const totalString = data.total.toLocaleString('ko-KR'); 
                 
-                // 월별 총계 업데이트
-                document.getElementById('monthlyTotalGRider').innerText = `${totalString} 명 ${data.note || ''}`;
+                document.getElementById('monthlyTotalGRider').innerText = `${totalString} 명`;
 
-                // 성장률 업데이트
                 let growthHTML = '';
                 if (data.growth !== null && isFinite(data.growth)) {
                     const growthString = data.growth.toFixed(1); 
@@ -843,12 +901,12 @@
                     growthHTML = `(${comparisonMonth} 0명에서 증가)`;
                 }
                 document.getElementById('monthlyGrowthGRider').innerHTML = growthHTML;
-                // --- *** 신규: 누적 합계 동적 업데이트 (5월 포함) *** ---
+                
                 let cumulativeTotal = 0;
-                let cumulativeLabel = "(5월)"; // 기본값
+                let cumulativeLabel = "(5월)"; 
                 const monthNum = parseInt(month, 10);
 
-                if (monthNum >= 5) cumulativeTotal += gRiderMainTotalMay; // 5월 추가
+                if (monthNum >= 5) cumulativeTotal += gRiderMainTotalMay; 
                 if (monthNum >= 6) cumulativeTotal += gRiderMainTotalJune;
                 if (monthNum >= 7) cumulativeTotal += gRiderMainTotalJuly;
                 if (monthNum >= 8) cumulativeTotal += gRiderMainTotalAug;
@@ -856,16 +914,10 @@
                 if (monthNum >= 10) cumulativeTotal += gRiderMainTotalOct;
                 if (monthNum >= 11) cumulativeTotal += gRiderMainTotalNov;
                 
-                // 누적 기간 레이블 업데이트
-                if (monthNum > 5) { // 5월부터 시작하도록 변경
+                if (monthNum > 5) { 
                     cumulativeLabel = `(5월~${month}월)`;
                 }
-                // 11월의 경우, 특별 노트 추가
-                if (monthNum == 11 && data.note) {
-                    cumulativeLabel = `(5월~${month}월 ${data.note})`;
-                }
 
-                // 누적 카드 DOM 업데이트
                 document.getElementById('cumulativeTotalGRider').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
                 document.querySelector('#cumulativeSummaryContainerGRider .text-md').innerText = cumulativeLabel;
             }
@@ -900,7 +952,7 @@
                                 formatter: (value, context) => {
                                     const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     const percentage = ((value / total) * 100);
-                                    if (percentage < 5) return ''; // 5% 미만은 숨김
+                                    if (percentage < 5) return ''; 
                                     return percentage.toFixed(0) + '%';
                                 },
                             }
@@ -909,7 +961,7 @@
                 });
             }
 
-            // 4-5-B. 그라이더(Main) 안전교육 파이 차트 렌더링 (Tab 2) - *** 신규 함수 ***
+            // 4-5-B. 그라이더(Main) 안전교육 파이 차트 렌더링 (Tab 2)
             function gRiderRenderSafetyPieChart() {
                 if (gRiderSafetyPieChart) {
                     gRiderSafetyPieChart.destroy();
@@ -939,7 +991,7 @@
                                 formatter: (value, context) => {
                                     const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                                     const percentage = ((value / total) * 100);
-                                    if (percentage < 5) return ''; // 5% 미만은 숨김
+                                    if (percentage < 5) return ''; 
                                     return percentage.toFixed(0) + '%';
                                 },
                             }
@@ -955,19 +1007,23 @@
                     gRiderDailySignupChart.destroy();
                 }
                 const chartData = gRiderDailyDataStore[month];
-                
-                // 요청사항: Y축 최대값 고정 (250으로 설정)
                 const yMax = 250;
+
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
 
                 gRiderDailySignupChart = new Chart(gRiderLineCtx, {
                     type: 'line',
+                    plugins: localPlugins, 
                     data: {
                         labels: chartData.labels,
                         datasets: [{
                             label: '일별 가입 인원 (명)',
                             data: chartData.completions,
-                            fill: true, // 영역 채우기
-                            borderColor: 'rgb(22, 163, 74)', // Green
+                            fill: true, 
+                            borderColor: 'rgb(22, 163, 74)', 
                             backgroundColor: 'rgba(22, 163, 74, 0.1)',
                             tension: 0.1,
                             pointRadius: 4,
@@ -978,22 +1034,21 @@
                         responsive: true,
                         plugins: {
                             title: { display: true, text: chartData.title, font: { size: 18, weight: '600' }, padding: { top: 10, bottom: 20 } },
-                            tooltip: { mode: 'index', intersect: false }, // *** 수정됨 ***
+                            tooltip: { mode: 'index', intersect: false }, 
                             datalabels: {
-                                display: true, // 50명 이상 조건을 제거하고 'true'로 설정하여 모두 표시
+                                display: true, 
                                 align: 'top', offset: 6,
                                 font: { weight: '500', size: 11 },
                                 color: '#1f2937'
                             },
-                            // *** 수정: Annotation 플러그인 추가 ***
                             annotation: { 
-                                annotations: chartData.annotations || {} // 해당 월에 annotations이 없으면 빈 객체 사용
+                                annotations: chartData.annotations || {} 
                             }
                         },
                         scales: {
                             y: { beginAtZero: true, max: yMax, title: { display: true, text: '가입 인원 (명)' } }
                         },
-                        interaction: { intersect: false, mode: 'index' } // *** 신규 ***
+                        interaction: { intersect: false, mode: 'index' } 
                     }
                 });
             }
@@ -1003,10 +1058,8 @@
                 const data = gRiderDailyDataStore[month];
                 const totalString = data.total.toLocaleString('ko-KR'); 
                 
-                // 월별 총계 업데이트
-                document.getElementById('monthlyTotalGRiderPlus').innerText = `${totalString} 명 ${data.note || ''}`;
+                document.getElementById('monthlyTotalGRiderPlus').innerText = `${totalString} 명`;
 
-                // 성장률 업데이트
                 let growthHTML = '';
                 if (data.growth !== null && isFinite(data.growth)) {
                     const growthString = data.growth.toFixed(1); 
@@ -1022,9 +1075,8 @@
                 }
                 document.getElementById('monthlyGrowthGRiderPlus').innerHTML = growthHTML;
 
-                // --- *** 신규: 누적 합계 동적 업데이트 *** ---
                 let cumulativeTotal = 0;
-                let cumulativeLabel = "(6월)"; // 기본값
+                let cumulativeLabel = "(6월)"; 
                 const monthNum = parseInt(month, 10);
 
                 if (monthNum >= 6) cumulativeTotal += gRiderTotalJune;
@@ -1034,16 +1086,10 @@
                 if (monthNum >= 10) cumulativeTotal += gRiderTotalOct;
                 if (monthNum >= 11) cumulativeTotal += gRiderTotalNov;
                 
-                // 누적 기간 레이블 업데이트
                 if (monthNum > 6) {
                     cumulativeLabel = `(6월~${month}월)`;
                 }
-                // 11월의 경우, 특별 노트 추가
-                if (monthNum == 11 && data.note) {
-                    cumulativeLabel = `(6월~${month}월 ${data.note})`;
-                }
 
-                // 누적 카드 DOM 업데이트
                 document.getElementById('cumulativeTotalGRiderPlus').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
                 document.querySelector('#cumulativeSummaryContainerGRiderPlus .text-md').innerText = cumulativeLabel;
             }
@@ -1087,7 +1133,7 @@
                 });
             }
 
-            // 4-8-B. 그라이더플러스 안전교육 파이 차트 렌더링 (Tab 3) - *** 신규 함수 ***
+            // 4-8-B. 그라이더플러스 안전교육 파이 차트 렌더링 (Tab 3)
             function gRiderPlusRenderSafetyPieChart() {
                 if (gRiderPlusSafetyPieChart) {
                     gRiderPlusSafetyPieChart.destroy();
@@ -1130,29 +1176,24 @@
 
             // 탭 변경 로직
             function showSection(sectionId) {
-                // 모든 섹션 숨기기
                 reportSections.forEach(section => {
                     section.classList.add('hidden');
                 });
-                // 모든 탭 비활성
                 tabButtons.forEach(button => {
                     button.classList.remove('tab-active');
                     button.classList.add('tab-inactive');
                 });
 
-                // 대상 섹션 보이기
                 const activeSection = document.getElementById(sectionId);
                 if (activeSection) {
                     activeSection.classList.remove('hidden');
                 }
-                // 대상 탭 활성
                 const activeButton = document.querySelector(`.tab-button[data-section="${sectionId}"]`);
                 if (activeButton) {
                     activeButton.classList.add('tab-active');
                     activeButton.classList.remove('tab-inactive');
                 }
 
-                // '그라이더' 탭(Tab 2)을 처음 클릭할 때 차트 렌더링
                 if (sectionId === 'section-g-rider') {
                     if (!gRiderMainLineChartInitialized) {
                         gRiderMainRenderLineChart(gRiderMainMonthSelect.value);
@@ -1163,14 +1204,12 @@
                         gRiderMainRenderPieChart();
                         gRiderMainPieChartInitialized = true;
                     }
-                    // *** 신규 ***
                     if (!gRiderSafetyPieChartInitialized) {
                         gRiderRenderSafetyPieChart();
                         gRiderSafetyPieChartInitialized = true;
                     }
                 }
 
-                // '그라이더플러스' 탭(Tab 3)을 처음 클릭할 때 차트 렌더링
                 if (sectionId === 'section-g-rider-plus') {
                     if (!gRiderLineChartInitialized) {
                         gRiderRenderLineChart(gRiderMonthSelect.value);
@@ -1181,7 +1220,6 @@
                         gRiderRenderPieChart();
                         gRiderPieChartInitialized = true;
                     }
-                    // *** 신규 ***
                     if (!gRiderPlusSafetyPieChartInitialized) {
                         gRiderPlusRenderSafetyPieChart();
                         gRiderPlusSafetyPieChartInitialized = true;
@@ -1189,41 +1227,31 @@
                 }
             }
 
-            // 탭 버튼에 클릭 이벤트 추가
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     showSection(button.dataset.section);
                 });
             });
 
-            // 안전교육 드롭다운
             monthSelect.addEventListener('change', (event) => {
                 renderSafetyChart(event.target.value);
                 updateSafetySummary(event.target.value); 
             });
 
-            // '그라이더' 드롭다운
             gRiderMainMonthSelect.addEventListener('change', (event) => {
                 gRiderMainRenderLineChart(event.target.value);
                 gRiderMainUpdateSummary(event.target.value);
             });
 
-            // 그라이더플러스 드롭다운
             gRiderMonthSelect.addEventListener('change', (event) => {
                 gRiderRenderLineChart(event.target.value);
-                // *** 오류 수정 ***
-                // 요약 카드를 업데이트하는 올바른 함수(gRiderUpdateSummary)를 호출해야 합니다.
                 gRiderUpdateSummary(event.target.value);
             });
 
             // --- 6. 초기 로드 ---
-            // 기본으로 '안전교육' 섹션의 차트와 요약을 로드
             renderSafetyChart(monthSelect.value);
             updateSafetySummary(monthSelect.value); 
-            // showSection('section-safety'); // 페이지 로드 시 이미 활성/표시 상태임
 
-        }); // === window.load 래퍼 종료 ===
+        }); 
     </script>
-
-
 </body></html>
