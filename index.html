@@ -1,1017 +1,1257 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeoX 직원 ID 및 현황 대시보드 (편집 및 이력 관리)</title>
+    <title>통합 현황 보고서</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Annotation Plugin CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+    <!-- Chart.js DataLabels Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        /* Inter 폰트 import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        /* Noto Sans KR 폰트 (Inter 폰트의 한글 대체) */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #eef2f6;
+            /* Inter를 우선으로 하되, 한글은 Noto Sans KR로 보이도록 설정 */
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
         }
-        /* Custom styles for status badges */
-        .status-badge {
-            display: inline-block;
-            padding: 0.3rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.85rem;
+        /* 활성 탭 스타일 */
+        .tab-active {
+            border-bottom-color: #3b82f6; /* blue-600 */
+            color: #2563eb; /* blue-700 */
             font-weight: 600;
-            text-align: center;
-            min-width: 80px;
         }
-        .dashboard-card {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-        }
-        .data-row {
-            transition: background-color 0.15s ease-in-out;
-        }
-        .data-row:not(.editing):hover {
-            opacity: 0.95;
-            /* Tailwind classes below will be used by JavaScript for dynamic hover colors */
-        }
-        .history-row {
-            display: none;
-            background-color: #f7f9fb;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .history-list li {
-            padding: 0.5rem 0;
-            border-left: 3px solid #3b82f6;
-            padding-left: 1rem;
-            margin-bottom: 0.5rem;
-            background-color: #ffffff;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-        /* Input/Select styling for edit mode */
-        .edit-input, .edit-select {
-            border: 1px solid #ccc;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: white;
-        }
-        .data-action {
-             /* Makes the cell content clickable for history, but not the buttons */
-             cursor: pointer;
-        }
-        .disabled-btn {
-            opacity: 0.5;
-            cursor: not-allowed;
-            box-shadow: none;
+        /* 비활성 탭 스타일 */
+        .tab-inactive {
+            color: #4b5563; /* gray-600 */
+            border-bottom-color: transparent;
         }
     </style>
 </head>
-<body class="p-4 sm:p-10 flex justify-center">
-    <div class="w-full lg:max-w-6xl bg-white rounded-2xl dashboard-card overflow-hidden">
-        
-        <!-- Header Section -->
-        <header class="p-6 sm:p-8 bg-white border-b border-gray-100 flex justify-between items-start flex-wrap gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-gray-800">부산CX센터 직원 LeoX ID 및 현황 대시보드</h1>
-                <p class="text-md text-gray-500 mt-2">직원 현황을 직접 수정하고 변경 이력을 관리해보세요. (아이디는 변경 불가)</p>
+<body class="p-4 md:p-8">
+
+    <!-- === 상단 네비게이션 메뉴 === -->
+    <nav class="max-w-6xl mx-auto mb-6 bg-white rounded-lg shadow-sm">
+        <div class="flex border-b border-gray-200">
+            <!-- 1. 안전교육수료현황 탭 -->
+            <button id="tab-btn-safety" class="tab-button py-4 px-6 text-base md:text-lg transition duration-150 ease-in-out border-b-4 tab-active" data-section="section-safety">
+                <!-- 아이콘 SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5 mr-1 md:mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.491a11.955 11.955 0 01-6.812 6.812M12 3a9 9 0 00-9 9m9 9a9 9 0 009-9m-9 9H3m9 9V3m9 9H3" />
+                </svg>
+                안전교육수료현황
+            </button>
+            <!-- 2. 그라이더 탭 -->
+            <button id="tab-btn-g-rider" class="tab-button py-4 px-6 text-base md:text-lg transition duration-150 ease-in-out border-b-4 tab-inactive" data-section="section-g-rider">
+                <!-- 아이콘 SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5 mr-1 md:mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                그라이더
+            </button>
+            <!-- 3. 그라이더플러스 탭 -->
+            <button id="tab-btn-g-rider-plus" class="tab-button py-4 px-6 text-base md:text-lg transition duration-150 ease-in-out border-b-4 tab-inactive" data-section="section-g-rider-plus">
+                <!-- 아이콘 SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5 mr-1 md:mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c.054-.363.11-.723.17-1.08C12.68 7.33 15.01 5 18 5s5.32 2.33 5.83 5A8.002 8.002 0 0118 19c-2.99 0-5.32-2.33-5.83-5" clip-rule="evenodd" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2 11c.054-.363.11-.723.17-1.08C2.68 7.33 5.01 5 8 5s5.32 2.33 5.83 5A8.002 8.002 0 018 19c-2.99 0-5.32-2.33-5.83-5" clip-rule="evenodd" />
+                </svg>
+                그라이더플러스
+            </button>
+        </div>
+    </nav>
+    <!-- === 네비게이션 메뉴 종료 === -->
+
+
+    <!-- === 보고서 섹션 컨테이너 === -->
+    <div class="max-w-6xl mx-auto">
+
+        <!-- 섹션 1: 월별 안전교육 수료 현황 (기본으로 표시) -->
+        <div id="section-safety" class="report-section bg-white p-6 md:p-10 rounded-xl shadow-lg">
+            
+            <!-- 헤더: 제목과 드롭다운 -->
+            <div class="flex flex-col md:flex-row justify-between md:items-start mb-6 gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+                    월별 안전교육 수료 현황 보고서
+                </h1>
+                <div class="w-full md:w-auto flex flex-col items-end">
+                    
+                    <!-- 커스텀 드롭다운 (안전교육) -->
+                    <div class="relative w-full md:w-56 group">
+                        <!-- 달력 아이콘 (왼쪽) -->
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <select id="monthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-semibold text-lg cursor-pointer hover:border-blue-400 transition-all">
+                            <option value="6">2025년 6월</option>
+                            <option value="7">2025년 7월</option>
+                            <option value="8">2025년 8월</option>
+                            <option value="9">2025년 9월</option>
+                            <option value="10">2025년 10월</option>
+                            <option value="11" selected>2025년 11월</option>
+                        </select>
+                        <!-- 화살표 아이콘 (오른쪽) -->
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- 요약 카드 컨테이너 (grid) -->
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full md:w-auto">
+                        <!-- "누적 인원" 카드 -->
+                        <div id="cumulativeSummaryContainerSafety" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                            <div class="text-sm font-semibold text-gray-600">총 누적 수료</div>
+                            <div id="cumulativeTotalSafety" class="text-3xl font-bold text-blue-600">6,716 명</div>
+                            <div class="mt-1 text-md text-gray-500">(6월~11월)</div>
+                        </div>
+                        
+                        <!-- "선택 월" 카드 -->
+                        <div id="monthlySummaryContainerSafety" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                            <div class="text-sm font-semibold text-gray-600">선택 월 총 수료</div>
+                            <div id="monthlyTotalSafety" class="text-3xl font-bold text-blue-600">1,692 명</div>
+                            <div id="monthlyGrowthSafety" class="mt-1 text-md text-gray-500">(10월 대비 <span class="text-blue-600">-59.5%</span>)</div>
+                        </div>
+
+                        <!-- 교육수료비용 카드 -->
+                        <div id="monthlyCostContainerSafety" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                            <div class="text-sm font-semibold text-gray-600">교육수료비용 (선택 월)</div>
+                            <div id="monthlyCostSafety" class="text-3xl font-bold text-teal-600"><span class="whitespace-nowrap">3,384,000 원</span></div>
+                            <div class="mt-1 text-md text-gray-500">(인원 x 2,000원)</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Control Buttons Group -->
-            <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-                <!-- New ID Generation Button (Initially Disabled) -->
-                <button id="addNewIdBtn" class="bg-teal-500 text-white font-bold py-2 px-4 rounded-lg shadow-none opacity-50 cursor-not-allowed transition duration-150 flex items-center justify-center space-x-2" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                    <span>신규 ID 생성</span>
-                </button>
+
+            <!-- 차트 컨테이너 -->
+            <div class="w-full">
+                <canvas id="safetyTrainingChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 섹션 2: 그라이더 가입 현황 (기본 숨김) -->
+        <div id="section-g-rider" class="report-section bg-white rounded-xl shadow-lg hidden">
+            <!-- '그라이더' 일별 가입 추이 -->
+            <div class="p-6 md:p-10 border-b border-gray-200">
+                <div class="flex flex-col md:flex-row justify-between md:items-start mb-6 gap-4">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+                        그라이더: 일별 가입 추이
+                    </h1>
+                    <div class="w-full md:w-auto flex flex-col items-end">
+                        
+                        <!-- 커스텀 드롭다운 (그라이더 - 주황 테마) -->
+                        <div class="relative w-full md:w-56 group">
+                            <!-- 달력 아이콘 -->
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-amber-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select id="gRiderMainMonthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-semibold text-lg cursor-pointer hover:border-amber-400 transition-all">
+                                <option value="5">2025년 5월</option>
+                                <option value="6">2025년 6월</option>
+                                <option value="7">2025년 7월</option>
+                                <option value="8">2025년 8월</option>
+                                <option value="9">2025년 9월</option>
+                                <option value="10">2025년 10월</option>
+                                <option value="11" selected>2025년 11월</option>
+                            </select>
+                            <!-- 화살표 아이콘 -->
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- 요약 카드 컨테이너 (grid) -->
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
+                            <!-- "누적 인원" 카드 -->
+                            <div id="cumulativeSummaryContainerGRider" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                                <div class="text-sm font-semibold text-gray-600">총 누적 가입</div>
+                                <div id="cumulativeTotalGRider" class="text-3xl font-bold text-amber-600">11,344 명</div>
+                                <div class="mt-1 text-md text-gray-500">(5월~11월 (11/5 기준))</div>
+                            </div>
+
+                            <!-- "선택 월" 카드 -->
+                            <div id="monthlySummaryContainerGRider" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                                <div class="text-sm font-semibold text-gray-600">선택 월 총 가입</div>
+                                <div id="monthlyTotalGRider" class="text-3xl font-bold text-amber-600">3,481 명 (11/5 기준)</div>
+                                <div id="monthlyGrowthGRider" class="mt-1 text-md text-gray-500">(10월 대비 <span class="text-blue-600">-46.0%</span>)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <canvas id="gRiderMainDailySignupChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 파이 차트 2-Grid 컨테이너 -->
+            <div class="p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
                 
-                <!-- Edit Mode Toggle Button -->
-                <button id="toggleEditModeBtn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-red-600 transition duration-150 flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1h2V3a1 1 0 00-1-1zm5.66 4.34a1 1 0 011.414 0l1.414 1.414a1 1 0 010 1.414L10.414 17h-1.414l-1.414 1.414a1 1 0 01-1.414 0L4.34 17.414a1 1 0 010-1.414l7.95-7.95-1.414-1.414 1.414-1.414L15 6.414zM10 13a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
-                    <span id="editModeStatus">수정 비활성화</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Filter Controls Section -->
-        <div class="p-6 sm:p-8 border-b border-gray-100 bg-gray-50 flex flex-col md:flex-row gap-4 items-center">
-            <h2 class="text-lg font-semibold text-gray-700 md:w-1/4">데이터 필터링</h2>
-            <div class="flex flex-col sm:flex-row gap-4 w-full md:w-3/4">
-                <!-- Status Filter Buttons (Replaced Select) -->
-                <div id="statusFilterButtons" class="flex items-center gap-2 flex-grow flex-wrap">
-                    <label class="text-sm font-medium text-gray-700 whitespace-nowrap">근무:</label>
-                    <button data-status="전체" class="status-btn bg-blue-600 text-white font-semibold py-1 px-3 rounded-lg shadow-md transition duration-150">전체 보기</button>
-                    <button data-status="근무중" class="status-btn bg-gray-200 text-gray-700 hover:bg-gray-300 py-1 px-3 rounded-lg transition duration-150">🟢 근무중</button>
-                    <button data-status="퇴사" class="status-btn bg-gray-200 text-gray-700 hover:bg-gray-300 py-1 px-3 rounded-lg transition duration-150">🔴 퇴사</button>
-                    <button data-status="신청 없음" class="status-btn bg-gray-200 text-gray-700 hover:bg-gray-300 py-1 px-3 rounded-lg transition duration-150">⚫️ 신청 없음</button>
-                    <!-- Hidden input to hold current filter value -->
-                    <input type="hidden" id="statusFilter" value="전체"> 
+                <!-- 좌측: 운송수단별 가입 현황 -->
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+                        그라이더: 운송수단별 가입 현황
+                    </h1>
+                    <div class="w-full" style="max-height: 450px;">
+                        <canvas id="gRiderMainVehiclePieChart"></canvas>
+                    </div>
                 </div>
-                <div class="flex-grow">
-                    <input type="text" id="searchFilter" placeholder="이름 또는 ID로 검색..." class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 w-full transition duration-150">
+
+                <!-- 우측: 안전교육 수료 현황 -->
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+                        그라이더: 안전교육 수료 현황
+                    </h1>
+                    <div class="w-full" style="max-height: 450px;">
+                        <canvas id="gRiderSafetyPieChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Employee Status Table -->
-        <div class="overflow-x-auto p-4">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-blue-50">
-                    <tr>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider rounded-tl-xl">아이디</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">이름</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">근무여부</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider">LeoX 상태</th>
-                        <th class="px-3 py-4 text-center text-xs font-bold text-blue-700 uppercase tracking-wider w-24">액션 / 이력</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTableBody" class="divide-y divide-gray-100">
-                    <!-- Dynamic Rows and History Rows will be inserted here -->
-                </tbody>
-            </table>
-            <!-- 검색 결과 없음 메시지 -->
-            <div id="noResults" class="hidden text-center p-8 text-lg text-gray-500">
-                검색 조건에 맞는 데이터가 없습니다.
-            </div>
-        </div>
 
-        <!-- Footer Section -->
-        <footer class="p-6 text-sm text-gray-500 text-center border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-            변경 이력 기능을 포함하여 업데이트되었습니다.
-        </footer>
-    </div>
-    
-    <!-- Password Input Modal -->
-    <div id="passwordModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
-            <h3 class="text-xl font-bold mb-4 text-gray-800">수정 모드 활성화</h3>
-            <p class="text-gray-600 mb-4">비밀번호를 입력하여 수정 기능을 활성화하세요.</p>
-            <input type="password" id="passwordInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4 edit-input" placeholder="비밀번호 입력">
-            <div class="flex justify-end space-x-2">
-                <button id="cancelPasswordBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-150">취소</button>
-                <button id="submitPasswordBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-150">확인</button>
-            </div>
-            <p id="passwordError" class="text-red-500 text-sm mt-3 hidden">비밀번호가 올바르지 않습니다.</p>
-        </div>
-    </div>
+        <!-- 섹션 3: 그라이더플러스 가입 현황 (기본 숨김) -->
+        <div id="section-g-rider-plus" class="report-section bg-white rounded-xl shadow-lg hidden">
+            
+            <!-- 그라이더플러스: 일별 가입 추이 -->
+            <div class="p-6 md:p-10 border-b border-gray-200">
+                <div class="flex flex-col md:flex-row justify-between md:items-start mb-6 gap-4">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+                        그라이더플러스: 일별 가입 추이
+                    </h1>
+                    <div class="w-full md:w-auto flex flex-col items-end">
+                        
+                        <!-- 커스텀 드롭다운 (그라이더플러스 - 초록 테마) -->
+                        <div class="relative w-full md:w-56 group">
+                            <!-- 달력 아이콘 -->
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 group-hover:text-green-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <select id="gRiderMonthSelect" class="appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-semibold text-lg cursor-pointer hover:border-green-400 transition-all">
+                                <option value="6">2025년 6월</option>
+                                <option value="7">2025년 7월</option>
+                                <option value="8">2025년 8월</option>
+                                <option value="9">2025년 9월</option>
+                                <option value="10">2025년 10월</option>
+                                <option value="11" selected>2025년 11월</option>
+                            </select>
+                            <!-- 화살표 아이콘 -->
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- 요약 카드 컨테이너 (grid) -->
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
+                             <!-- "누적 인원" 카드 -->
+                             <div id="cumulativeSummaryContainerGRiderPlus" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                                <div class="text-sm font-semibold text-gray-600">총 누적 가입</div>
+                                <div id="cumulativeTotalGRiderPlus" class="text-3xl font-bold text-green-600">3,244 명</div>
+                                <div class="mt-1 text-md text-gray-500">(6월~11월 (11/5 기준))</div>
+                            </div>
+                            
+                            <!-- "선택 월" 카드 -->
+                            <div id="monthlySummaryContainerGRiderPlus" class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-right">
+                                <div class="text-sm font-semibold text-gray-600">선택 월 총 가입</div>
+                                <div id="monthlyTotalGRiderPlus" class="text-3xl font-bold text-green-600">199 명 (11/5 기준)</div>
+                                <div id="monthlyGrowthGRiderPlus" class="mt-1 text-md text-gray-500">(10월 대비 <span class="text-blue-600">-90.4%</span>)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmationModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xs">
-            <h3 class="text-lg font-bold mb-3 text-red-700">ID 삭제 확인</h3>
-            <p class="text-gray-600 mb-4 text-sm" id="deleteConfirmMessage"></p>
-            <div class="flex justify-end space-x-2">
-                <button id="cancelDeleteBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-150 text-sm">취소</button>
-                <button id="confirmDeleteBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-150 text-sm">삭제 실행</button>
+                <div class="w-full">
+                    <canvas id="gRiderDailySignupChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 파이 차트 2-Grid 컨테이너 -->
+            <div class="p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
+
+                <!-- 좌측: 운송수단별 가입 현황 -->
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+                        그라이더플러스: 운송수단별 가입 현황
+                    </h1>
+                    <div class="w-full" style="max-height: 450px;">
+                        <canvas id="gRiderVehiclePieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 우측: 안전교육 수료 현황 -->
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+                        그라이더플러스: 안전교육 수료 현황
+                    </h1>
+                    <div class="w-full" style="max-height: 450px;">
+                        <canvas id="gRiderPlusSafetyPieChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!-- === 보고서 섹션 컨테이너 종료 === -->
 
 
     <script>
-        // 직원 데이터 배열 (가상의 영구 저장소 역할)
-        const employeeData = [
-            { name: "김윤지", id: "busan001", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "이정하", id: "busan002", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "변정인", id: "busan003", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "노미라", id: "busan004", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "강이은", id: "busan005", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "한정임", id: "busan006", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "김나현", id: "busan007", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "유지윤", id: "busan008", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "없음", id: "busan009", status: "신청 없음", leoxStatus: "미존재", history: [] },
-            { name: "박영웅", id: "busan010", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "한정임", id: "busan011", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "유지윤", id: "busan012", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "오재용", id: "busan013", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "최현진", id: "busan014", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "박혜민", id: "busan015", status: "퇴사", leoxStatus: "삭제", history: [] },
-            { name: "허다영", id: "busan016", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "박다은", id: "busan017", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "없음", id: "busan018", status: "신청 없음", leoxStatus: "미존재", history: [] },
-            { name: "없음", id: "busan019", status: "신청 없음", leoxStatus: "미존재", history: [] },
-            { name: "없음", id: "busan020", status: "신청 없음", leoxStatus: "미존재", history: [] },
-            { name: "없음", id: "busan021", status: "신청 없음", leoxStatus: "미존재", history: [] },
-            { name: "고성자", id: "busan022", status: "근무중", leoxStatus: "정상", history: [] },
-            { name: "이수진", id: "busan023", status: "근무중", leoxStatus: "정상", history: [] },
-        ];
+        window.addEventListener('load', () => {
 
-        // 현재 편집 중인 행의 ID를 저장하는 전역 변수
-        let editingId = null;
-        // 삭제 확인 중인 ID를 저장하는 전역 변수
-        let idToDelete = null; 
-        
-        // --- 수정 모드 및 비밀번호 관리 ---
-        const CORRECT_PASSWORD = 'leox1234'; // 데모용 비밀번호
-        let isEditModeEnabled = false; // 기본적으로 비활성화
-        
-        // 근무여부 및 LeoX 상태 옵션
-        const statusOptions = ['근무중', '퇴사', '신청 없음', '신규 등록'];
-        const leoxOptions = ['정상', '삭제', '미존재'];
-        
-        // --- 유틸리티 함수 ---
-
-        /**
-         * 상태 텍스트에 따라 기본 색상 그룹을 반환합니다.
-         */
-        function getStatusGroup(statusText) {
-            switch (statusText) {
-                case '근무중':
-                case '정상':
-                    return 'green';
-                case '퇴사':
-                case '삭제':
-                case '휴직':
-                case '일시 정지':
-                    return 'red';
-                case '신규 등록':
-                    return 'yellow'; // 신규 등록은 특별히 노란색으로 표시하여 눈에 띄게 합니다.
-                case '신청 없음':
-                case '미존재':
-                default:
-                    return 'gray';
-            }
-        }
-
-        /**
-         * 상태 그룹에 따라 뱃지와 행 배경색 클래스를 반환합니다.
-         * 모든 행에 조건부 배경색을 적용하도록 업데이트되었습니다.
-         */
-        function getStatusClasses(statusGroup) {
-            switch (statusGroup) {
-                case 'green': // 근무중, 정상 (활성)
-                    return { badgeBg: 'bg-blue-200', badgeText: 'text-blue-800', rowBg: 'bg-blue-50/70', hoverBg: 'hover:bg-blue-100' };
-                case 'red': // 퇴사, 삭제 (비활성/삭제)
-                    return { badgeBg: 'bg-red-200', badgeText: 'text-red-700', rowBg: 'bg-red-100/70', hoverBg: 'hover:bg-red-200' };
-                case 'yellow': // 신규 등록 (임시 상태)
-                    return { badgeBg: 'bg-yellow-200', badgeText: 'text-yellow-800', rowBg: 'bg-yellow-50/70', hoverBg: 'hover:bg-yellow-100' };
-                case 'gray': // 신청 없음, 미존재 (중립)
-                default:
-                    return { badgeBg: 'bg-gray-200', badgeText: 'text-gray-600', rowBg: 'bg-gray-50/70', hoverBg: 'hover:bg-gray-100' };
-            }
-        }
-
-        /**
-         * 상태 텍스트로 뱃지 HTML을 생성합니다.
-         */
-        function createStatusBadge(statusText) {
-            const statusGroup = getStatusGroup(statusText);
-            const { badgeBg, badgeText } = getStatusClasses(statusGroup);
-            return `<span class="status-badge ${badgeBg} ${badgeText}">${statusText}</span>`;
-        }
-
-        /**
-         * 변경 이력 유형 문자열에서 이름 부분을 찾아 붉은색으로 강조합니다.
-         */
-        function highlightNameInHistoryType(typeString) {
-            const colorClass = 'text-red-600 font-bold';
-            let result = typeString;
-
-            // Pattern 1: [Name]님 (e.g., "이정하님 퇴사...")
-            // Capture group 1: [Name] (Korean name characters)
-            // Capture group 2: 님
-            result = result.replace(
-                /([가-힣]+)(님)/g, 
-                (match, name, suffix) => `<span class="${colorClass}">${name}</span>${suffix}`
-            );
-
-            // Pattern 2: ([Name]) or (이전 사용자: [Name]) (e.g., "ID 재할당 및 신규 등록 (김나현)")
-            // Capture group 1: Everything inside the parenthesis
-            result = result.replace(
-                /\((.*?)\)/g, 
-                (match) => {
-                    // Replace the Korean name part inside the parenthesis with the colored span
-                    return match.replace(
-                        /([가-힣]+)/g, 
-                        (nameMatch) => `<span class="${colorClass}">${nameMatch}</span>`
-                    );
+            // --- 1. 플러그인 등록 ---
+            try {
+                let pluginsLoaded = true;
+                if (window.chartjsPluginAnnotation) {
+                    Chart.register(window.chartjsPluginAnnotation);
+                } else {
+                    console.warn("Chart.js Annotation plugin not found.");
+                    pluginsLoaded = false;
                 }
-            );
-            
-            return result;
-        }
-
-        /**
-         * 변경 이력 데이터를 기반으로 HTML 목록을 생성합니다.
-         */
-        function createHistoryDetails(history) {
-            if (!history || history.length === 0) {
-                return '<p class="text-gray-500 italic p-4">등록된 변경 이력이 없습니다.</p>';
-            }
-
-            // 최신 순으로 정렬 (가장 최근 항목이 위로)
-            const sortedHistory = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            const listItems = sortedHistory.map(item => {
-                let detailsHtml = '';
-                
-                if (item.changes) {
-                    detailsHtml = '<div class="mt-2 text-sm text-gray-700 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-200">';
-                    detailsHtml += '<p class="font-bold text-blue-700">주요 변경 사항:</p>';
-
-                    const fieldMap = { id: '아이디', name: '이름', status: '근무여부', leoxStatus: 'LeoX 상태' };
-                    
-                    // 변경된 필드들을 순회하며 이전 값 -> 새 값을 표시
-                    Object.keys(item.changes).forEach(field => {
-                        const fieldName = fieldMap[field] || field;
-                        const change = item.changes[field];
-                        detailsHtml += `<p><span class="font-semibold">${fieldName}:</span> <span class="text-red-500">${change.from}</span> &rarr; <span class="text-green-600 font-bold">${change.to}</span></p>`;
-                    });
-                    detailsHtml += '</div>';
+                if (window.ChartDataLabels) {
+                    Chart.register(window.ChartDataLabels);
+                } else {
+                    console.warn("Chart.js DataLabels plugin not found.");
+                    pluginsLoaded = false;
                 }
-                
-                detailsHtml += `<p class="text-sm text-gray-600 mt-2">${item.details}</p>`;
-
-                // highlightNameInHistoryType 함수를 사용하여 type 문자열의 이름 부분을 강조합니다.
-                const highlightedType = highlightNameInHistoryType(item.type);
-
-                return `
-                    <li class="p-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-semibold text-gray-800">${highlightedType}</span>
-                            <span class="text-xs text-gray-500">${item.date}</span>
-                        </div>
-                        ${detailsHtml}
-                    </li>
-                `;
-            }).join('');
-
-            return `
-                <div class="p-6">
-                    <h4 class="text-lg font-bold mb-4 text-blue-800 border-b pb-2">변경 이력 (${history.length}건)</h4>
-                    <ul class="space-y-4 history-list">
-                        ${listItems}
-                    </ul>
-                </div>
-            `;
-        }
-        
-        // --- UI 업데이트 및 액션 함수 ---
-
-        /**
-         * 수정 모드 UI (버튼 텍스트, 스타일, 신규 ID 버튼 활성화)를 업데이트합니다.
-         */
-        function updateEditModeUI() {
-            const toggleBtn = document.getElementById('toggleEditModeBtn');
-            const statusSpan = document.getElementById('editModeStatus');
-            const newIdBtn = document.getElementById('addNewIdBtn'); // 신규 ID 버튼
-            
-            if (isEditModeEnabled) {
-                // 수정 버튼 UI 변경
-                statusSpan.textContent = '수정 활성화 (클릭하여 비활성화)';
-                toggleBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
-                toggleBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                
-                // 신규 ID 버튼 활성화
-                newIdBtn.disabled = false;
-                newIdBtn.classList.remove('disabled-btn', 'opacity-50', 'cursor-not-allowed', 'shadow-none');
-                newIdBtn.classList.add('shadow-lg', 'hover:bg-teal-600');
-
-            } else {
-                // 수정 버튼 UI 변경
-                statusSpan.textContent = '수정 비활성화';
-                toggleBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                toggleBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-
-                // 신규 ID 버튼 비활성화
-                newIdBtn.disabled = true;
-                newIdBtn.classList.add('disabled-btn', 'opacity-50', 'cursor-not-allowed', 'shadow-none');
-                newIdBtn.classList.remove('shadow-lg', 'hover:bg-teal-600');
+                if (!pluginsLoaded) {
+                    console.error("하나 이상의 Chart.js 플러그인을 로드하지 못했습니다.");
+                }
+            } catch (e) {
+                console.error("Chart.js 플러그인 등록에 실패했습니다.", e);
             }
-        }
-        
-        /**
-         * 비밀번호 입력 모달을 표시합니다.
-         */
-        function showPasswordModal() {
-            document.getElementById('passwordModal').classList.remove('hidden');
-            document.getElementById('passwordInput').value = '';
-            document.getElementById('passwordError').classList.add('hidden');
-            document.getElementById('passwordInput').focus();
-        }
 
-        /**
-         * 비밀번호 입력 모달을 숨깁니다.
-         */
-        function hidePasswordModal() {
-            document.getElementById('passwordModal').classList.add('hidden');
-        }
-        
-        /**
-         * 비밀번호를 확인하고 수정 모드를 활성화합니다.
-         */
-        function checkPasswordAndActivate(password) {
-            if (password === CORRECT_PASSWORD) {
-                isEditModeEnabled = true;
-                hidePasswordModal();
-                updateEditModeUI();
-                filterTable(); // 버튼 활성화 및 삭제 버튼 표시를 위해 테이블 리렌더링
-                console.log("수정 모드가 성공적으로 활성화되었습니다.");
-            } else {
-                document.getElementById('passwordError').classList.remove('hidden');
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').focus();
-            }
-        }
-        
-        /**
-         * 수정 모드 활성화/비활성화 상태를 토글합니다.
-         */
-        function toggleEditModeActivation() {
-            if (isEditModeEnabled) {
-                // 비활성화 처리 (비밀번호 없이 바로 가능)
-                isEditModeEnabled = false;
-                updateEditModeUI();
-                filterTable();
-                console.log("수정 모드가 비활성화되었습니다.");
-            } else {
-                // 활성화 처리 (비밀번호 필요)
-                showPasswordModal();
-            }
-        }
+            // *** 네이버 카페 아이콘 이미지 로드 ***
+            const naverCafeIcon = new Image();
+            // 네이버 카페 아이콘 (Base64)
+            naverCafeIcon.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEGklEQVR4nO2ZS2hcVRjHf+fOzCSZyUyTSZ9p06StMU2qaVsV3VhBCxUERdCFIKLQhSgqLlKwG9GF6EIXpSgquhBE3IqKC1GLqI1J0zfTpiaTaTKZNyf3Huf4/86decydTCbJ3JkL/eCwmLn3nvP9zjmfe865YwkhhBBCCCHEnxOqXkAp2bZtW83zPE/TNE/TtJqu6zVd12u6rtV0Xatpmlb1fV/VNK0qpbQ0Tat6nldVFKWqKMq/iqJUnc/n59Lp9Fw+n58bHR2dK+d6y5JAw7btgziO79d1/QBN0w5omrZf17WqaZpW0zStZprmolvXda2aTqfndF2f03V9TlGUOUVR5mZnZ+emp6fnhoeH50q95pIg0Lht2/s1TftR07T9hmHsb2ho2G8YRtUwjKphGFXTNKumadqC29A0bdGtaZpWUxRlTlGUWUVRPs/n85/rur4wMzMzNzIyMjc/P79QynWWBIFG27b3Y4x/MAxjv2EY+5uamvam0+l9hmFUATiOU7Vte1HAtm1P07SqruvVTCYzp2nazLyqKHOapu0XRfHT2dnZueHh4Vy5114SBBq3bXufYRj7DcP4oKamZn9zc/N+wzCqtm17lmV5lmV5tm17lmV5lmV5tm17tm17juNUM5nMnKZpc4qizCqK8pmmaR/rur4wMzMzV8moLAkCjdlsdj/G+EBNTc2BpqamfYZh7C8G37btRaCtW7d6lmV5lmV5tm17juN4mUxmLpPJfK7r+seKonzS2Ni4MDw8vFBOBCwJAs11dXUH6uvrDzQ3N+8zDKNqMfiO43iWZVm2bVuO41iO41iWZVmWZXm2bXuZTGZO07RPFEX5qLa2dmFkZGShnAhYEgSazc3NB5qbmw/U1tbuMwzDsyzLchzHchzHchzHchzHchzHchzHchzHymQyc6qqzquq+pGu6x+2tLQsDA0NLZQTgf8l0GwYxp7a2tp9lmV5juNYjuNYjuNYjuNYjuNYjuNYjuNYjuNYmUxmLpPJzKmquqCq6keGYXw0MjKyUE4ELAkCzYaGhgNNTU37LMvyHMexHMexHMexHMexHMexHMexLMuyLMuyHMexMpnMnKqqC4qiLKiqqjc0NCwMDw8vlBMBf71A/W3b3q9p2gHDMPY3NjbuNwzDcxzHsizLs23bsyzLsizLs23bs23b8zzPq66urnY8z/M8z/M8z/M8z/M8z6uurvaqV/Q8z/M8z/M8z7Isy8pkMnOKosypqjqfTqcX6urqFoaGhuZKvd6SINDY3Nzc39jYuN8wjKrjOJ7jOJ7jOJ7jOJ7jOJ7jOJ7jOJ7neY7jeI7jeI7jeI7jeI7jeI7jeI7jeI7jWI7jWI7jWJ7neZ7neZ7neZZlWYZhWIqizCmKMq+q6oKu63Oqqs6l0+m5kZGRuXKulRBCCCGEEEIIIf5d/AGjIF+v+Y9uYAAAAABJRU5ErkJggg==';
 
-        /**
-         * 다음 순번의 ID (busanXXX)를 계산하여 반환합니다.
-         */
-        function getNextEmployeeId() {
-            let maxNum = 0;
-            // 모든 ID에서 숫자 부분만 추출하여 최대값을 찾습니다.
-            employeeData.forEach(data => {
-                const match = data.id.match(/^busan(\d+)$/);
-                if (match) {
-                    const num = parseInt(match[1], 10);
-                    if (num > maxNum) {
-                        maxNum = num;
+            // --- 2. 헬퍼 함수 및 데이터 저장소 ---
+            const sum = (arr) => arr.reduce((a, b) => a + b, 0);
+
+            // 2-1. 안전교육 데이터 (Tab 1)
+            const dataStore = {
+                '6': {
+                    labels: ['06-01', '06-02', '06-03', '06-04', '06-05', '06-06', '06-07', '06-08', '06-09', '06-10', '06-11', '06-12', '06-13', '06-14', '06-15', '06-16', '06-17', '06-18', '06-19', '06-20', '06-21', '06-22', '06-23', '06-24', '06-25', '06-26', '06-27', '06-28', '06-29', '06-30'],
+                    completions: [0, 1, 0, 3, 4, 1, 1, 1, 1, 1, 5, 2, 6, 0, 1, 15, 6, 6, 8, 5, 5, 2, 4, 2, 9, 3, 4, 4, 4, 2],
+                    title: '2025년 6월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-06)', annotations: {}
+                },
+                '7': {
+                    labels: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07', '07-08', '07-09', '07-10', '07-11', '07-12', '07-13', '07-14', '07-15', '07-16', '07-17', '07-18', '07-19', '07-20', '07-21', '07-22', '07-23', '07-24', '07-25', '07-26', '07-27', '07-28', '07-29', '07-30', '07-31'],
+                    completions: [5, 3, 9, 8, 9, 8, 2, 9, 4, 1, 6, 2, 7, 2, 3, 6, 2, 2, 2, 4, 5, 4, 7, 6, 6, 7, 3, 3, 5, 10, 7],
+                    title: '2025년 7월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-07)', annotations: {}
+                },
+                '8': {
+                    labels: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07', '08-08', '08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15', '08-16', '08-17', '08-18', '08-19', '08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26', '08-27', '08-28', '08-29', '08-30', '08-31'],
+                    completions: [3, 2, 2, 3, 8, 6, 5, 5, 3, 1, 4, 5, 6, 2, 5, 6, 1, 3, 9, 7, 4, 7, 5, 3, 6, 3, 14, 16, 22, 3, 3],
+                    title: '2025년 8월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-08)', annotations: {}
+                },
+                '9': {
+                    labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'],
+                    completions: [6, 1, 6, 2, 8, 3, 7, 4, 6, 8, 9, 6, 12, 4, 9, 8, 14, 11, 15, 10, 14, 19, 28, 28, 22, 21, 13, 13, 30, 70],
+                    title: '2025년 9월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-09)', 
+                    annotations: { 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '09-23', 
+                            borderColor: 'rgb(220, 38, 38)', // Red-600
+                            borderWidth: 3, 
+                            label: { 
+                                content: '그라이더플러스 시청제외', 
+                                display: true, 
+                                position: 'end', // 오른쪽 정렬
+                                backgroundColor: 'rgba(220, 38, 38, 0.8)', 
+                                color: 'white', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
                     }
+                },
+                '10': {
+                    labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'],
+                    completions: [163, 114, 95, 87, 39, 36, 30, 30, 28, 32, 30, 38, 44, 41, 63, 65, 106, 112, 94, 183, 210, 258, 279, 275, 242, 189, 176, 177, 421, 333, 192],
+                    title: '2025년 10월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-10)',
+                    annotations: { 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
+                    }
+                },
+                '11': {
+                    labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'],
+                    completions: [178, 125, 634, 607, 409, 308, 224, 152, 103, 138, 135, 120, 90, 103, 60, 91, 69, 79, 65, 63, 48, 61, 52, 61, 62, 82, 65, 56, 76, 74],
+                    title: '2025년 11월 일별 안전교육 수료 인원', xLabel: '날짜 (2025-11)',
+                    annotations: {}
                 }
-            });
-
-            const nextNum = maxNum + 1;
-            // 숫자를 3자리 문자열로 포맷팅합니다 (예: 1 -> "001", 24 -> "024")
-            const nextIdSuffix = String(nextNum).padStart(3, '0');
-            return `busan${nextIdSuffix}`;
-        }
-
-        /**
-         * 신규 ID를 생성하고 테이블에 추가합니다.
-         */
-        function addNewEmployee() {
-            // --- GUARD: Check if edit mode is enabled ---
-            if (!isEditModeEnabled) {
-                console.error("수정 모드가 비활성화되어 ID를 생성할 수 없습니다. 버튼을 활성화해주세요.");
-                return;
-            }
-
-            const newId = getNextEmployeeId();
-            const newEmployee = {
-                id: newId,
-                name: "신규 등록",
-                status: "신규 등록", // 신규 등록 상태로 설정하여 눈에 띄게 함
-                leoxStatus: "미존재",
-                history: [{ date: new Date().toISOString().substring(0, 10), type: "신규 ID 생성", details: `ID ${newId}가 생성되었으며, 기본 값으로 등록되었습니다.` }]
             };
 
-            employeeData.push(newEmployee);
-            console.log(`신규 ID ${newId}가 생성 및 등록되었습니다.`);
+            const totalJune = sum(dataStore['6'].completions);
+            const totalJuly = sum(dataStore['7'].completions);
+            const totalAug = sum(dataStore['8'].completions);
+            const totalSept = sum(dataStore['9'].completions);
+            const totalOct = sum(dataStore['10'].completions);
+            const totalNov = sum(dataStore['11'].completions); 
             
-            // 필터링 및 테이블 리렌더링 (신규 행 표시)
-            filterTable(); 
-            
-            // 신규 행을 즉시 편집 모드로 전환 (편의를 위해)
-            setTimeout(() => {
-                const newRow = document.querySelector(`.data-row[data-id="${newId}"]`);
-                if (newRow) {
-                    toggleEditMode(null, newId);
-                }
-            }, 100); 
-        }
+            const growthJulyVsJune = totalJune > 0 ? ((totalJuly - totalJune) / totalJune) * 100 : Infinity;
+            const growthAugVsJuly = totalJuly > 0 ? ((totalAug - totalJuly) / totalJuly) * 100 : Infinity;
+            const growthSeptVsAug = totalAug > 0 ? ((totalSept - totalAug) / totalAug) * 100 : Infinity;
+            const growthOctVsSept = totalSept > 0 ? ((totalOct - totalSept) / totalSept) * 100 : Infinity;
+            const growthNovVsOct = totalOct > 0 ? ((totalNov - totalOct) / totalOct) * 100 : Infinity;
 
+            dataStore['6'].total = totalJune; dataStore['6'].growth = null; 
+            dataStore['7'].total = totalJuly; dataStore['7'].growth = growthJulyVsJune; dataStore['7'].prevMonthName = '6월';
+            dataStore['8'].total = totalAug; dataStore['8'].growth = growthAugVsJuly; dataStore['8'].prevMonthName = '7월';
+            dataStore['9'].total = totalSept; dataStore['9'].growth = growthSeptVsAug; dataStore['9'].prevMonthName = '8월';
+            dataStore['10'].total = totalOct; dataStore['10'].growth = growthOctVsSept; dataStore['10'].prevMonthName = '9월';
+            dataStore['11'].total = totalNov; dataStore['11'].growth = growthNovVsOct; dataStore['11'].prevMonthName = '10월';
 
-        /**
-         * ID 삭제 확인 모달을 표시합니다.
-         */
-        function confirmAndDelete(event, employeeId, employeeName) {
-            if (event) event.stopPropagation();
-
-            if (!isEditModeEnabled) {
-                console.error("수정 모드가 비활성화되어 ID를 삭제할 수 없습니다.");
-                return;
-            }
-
-            // 1. 삭제 대상 ID 저장
-            idToDelete = employeeId;
-            
-            // 2. 메시지 설정
-            const msgElement = document.getElementById('deleteConfirmMessage');
-            msgElement.innerHTML = `정말 <span class="font-bold text-red-500">${employeeName}</span> 님의 ID <span class="font-bold">${employeeId}</span> 를 <span class="font-extrabold">영구적으로 삭제</span>하시겠습니까? 이 작업은 되돌릴 수 없습니다.`;
-            
-            // 3. 모달 표시
-            document.getElementById('deleteConfirmationModal').classList.remove('hidden');
-        }
-
-        /**
-         * ID 삭제를 실행합니다.
-         */
-        function deleteEmployee() {
-            if (!idToDelete) return;
-
-            // 1. 데이터에서 해당 ID 제거
-            const index = employeeData.findIndex(d => d.id === idToDelete);
-            const deletedEmployeeName = employeeData[index]?.name || idToDelete;
-
-            if (index > -1) {
-                employeeData.splice(index, 1);
-                console.log(`ID ${idToDelete} (${deletedEmployeeName}) 삭제 완료.`);
-            } else {
-                console.error(`ID ${idToDelete}를 찾을 수 없습니다.`);
-            }
-
-            // 2. UI 업데이트
-            filterTable();
-            
-            // 3. 모달 닫기 및 초기화
-            document.getElementById('deleteConfirmationModal').classList.add('hidden');
-            idToDelete = null;
-
-            // Optional: Show a temporary success message in the console
-            console.log(`[성공] ID ${idToDelete}가 영구 삭제되었습니다.`);
-        }
-
-
-        /**
-         * 상태 필터 버튼의 스타일을 업데이트합니다.
-         */
-        function updateStatusButtonStyles(selectedStatus) {
-            document.querySelectorAll('.status-btn').forEach(btn => {
-                if (btn.getAttribute('data-status') === selectedStatus) {
-                    btn.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300', 'shadow-none');
-                    btn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
-                } else {
-                    btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
-                    btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300', 'shadow-none');
-                }
-            });
-        }
-        
-        /**
-         * 모든 직원 데이터를 기반으로 테이블 본문을 렌더링합니다.
-         */
-        function renderTable(dataToRender = employeeData) {
-            const tbody = document.getElementById('employeeTableBody');
-            const noResults = document.getElementById('noResults');
-            if (!tbody || !noResults) return;
-
-            // ID 순으로 정렬하여 신규 등록된 항목이 마지막에 오도록 합니다.
-            dataToRender.sort((a, b) => a.id.localeCompare(b.id));
-
-            if (dataToRender.length === 0) {
-                tbody.innerHTML = '';
-                noResults.classList.remove('hidden');
-                return;
-            }
-
-            noResults.classList.add('hidden');
-            
-            const htmlContent = dataToRender.map(data => {
-                const statusGroup = getStatusGroup(data.status);
-                // rowBg와 hoverBg를 동적으로 가져옵니다.
-                const { rowBg, hoverBg } = getStatusClasses(statusGroup); 
-                const hasHistory = data.history && data.history.length > 0;
-                
-                const isEditing = data.id === editingId;
-
-                // 액션/이력 셀의 내용
-                let actionContent = '';
-                if (isEditing) {
-                    actionContent = `
-                        <div class="flex flex-col space-y-1">
-                            <button onclick="saveChanges(event, '${data.id}')" class="text-xs font-bold py-1 px-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition duration-150 shadow-md">저장</button>
-                            <button onclick="cancelEdit(event, '${data.id}')" class="text-xs font-bold py-1 px-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition duration-150 shadow-md">취소</button>
-                        </div>
-                    `;
-                } else {
-                    // 수정/삭제 버튼 및 이력 아이콘
-                    const toggleIcon = hasHistory ? '<svg class="w-4 h-4 text-gray-500 toggle-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>' : '<span class="text-gray-400">-</span>';
-                    
-                    let editButtonHtml = '';
-                    let deleteButtonHtml = '';
-
-                    if (isEditModeEnabled) {
-                        editButtonHtml = `<button onclick="toggleEditMode(event, '${data.id}')" class="text-xs font-bold py-1 px-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition duration-150 shadow-md">수정</button>`;
-                        deleteButtonHtml = `<button onclick="confirmAndDelete(event, '${data.id}', '${data.name}')" class="text-xs font-bold py-1 px-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition duration-150 shadow-md">삭제</button>`;
+            // 2-2. 그라이더 (Main) 데이터 (Tab 2)
+            const gRiderMainDailyDataStore = {
+                '5': { 
+                    labels: ['05-01', '05-02', '05-03', '05-04', '05-05', '05-06', '05-07', '05-08', '05-09', '05-10', '05-11', '05-12', '05-13', '05-14', '05-15', '05-16', '05-17', '05-18', '05-19', '05-20', '05-21', '05-22', '05-23', '05-24', '05-25', '05-26', '05-27', '05-28', '05-29', '05-30', '05-31'], 
+                    completions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                    title: '2025년 5월 일별 가입 인원',
+                    annotations: {}
+                },
+                '6': { 
+                    labels: ['06-01', '06-02', '06-03', '06-04', '06-05', '06-06', '06-07', '06-08', '06-09', '06-10', '06-11', '06-12', '06-13', '06-14', '06-15', '06-16', '06-17', '06-18', '06-19', '06-20', '06-21', '06-22', '06-23', '06-24', '06-25', '06-26', '06-27', '06-28', '06-29', '06-30'], 
+                    completions: [0, 0, 0, 12, 5, 2, 4, 1, 2, 3, 6, 7, 2, 1, 3, 7, 6, 6, 8, 1, 3, 0, 4, 5, 9, 2, 5, 1, 2, 6], 
+                    title: '2025년 6월 일별 가입 인원',
+                    annotations: {}
+                },
+                '7': { 
+                    labels: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07', '07-08', '07-09', '07-10', '07-11', '07-12', '07-13', '07-14', '07-15', '07-16', '07-17', '07-18', '07-19', '07-20', '07-21', '07-22', '07-23', '07-24', '07-25', '07-26', '07-27', '07-28', '07-29', '07-30', '07-31'], 
+                    completions: [6, 7, 11, 14, 11, 20, 13, 6, 5, 2, 11, 4, 8, 4, 9, 10, 6, 9, 7, 5, 7, 8, 7, 7, 11, 5, 6, 9, 10, 5, 2], 
+                    title: '2025년 7월 일별 가입 인원',
+                    annotations: {}
+                },
+                '8': { 
+                    labels: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07', '08-08', '08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15', '08-16', '08-17', '08-18', '08-19', '08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26', '08-27', '08-28', '08-29', '08-30', '08-31'], 
+                    completions: [6, 4, 5, 6, 14, 6, 10, 6, 7, 5, 5, 10, 2, 8, 11, 13, 7, 6, 11, 13, 15, 21, 5, 7, 9, 5, 8, 15, 5, 5, 7], 
+                    title: '2025년 8월 일별 가입 인원',
+                    annotations: {}
+                },
+                '9': { 
+                    labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'], 
+                    completions: [7, 6, 8, 12, 14, 4, 11, 12, 14, 14, 14, 12, 20, 11, 21, 20, 10, 22, 21, 29, 14, 46, 48, 38, 34, 39, 28, 14, 87, 170], 
+                    title: '2025년 9월 일별 가입 인원',
+                    annotations: { 
+                        line1: { type: 'line', scaleID: 'x', value: '09-23', borderColor: 'rgb(220, 38, 38)', borderWidth: 3, label: { content: '그라이더플러스 시청제외', display: true, position: 'end', backgroundColor: 'rgba(220, 38, 38, 0.8)', color: 'white', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
                     }
+                },
+                '10': { 
+                    labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '08-09', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'], 
+                    completions: [338, 224, 148, 117, 57, 29, 38, 57, 38, 46, 67, 76, 76, 83, 110, 147, 143, 133, 145, 251, 229, 416, 372, 496, 287, 203, 282, 239, 996, 400, 202], 
+                    title: '2025년 10월 일별 가입 인원',
+                    annotations: { 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
+                    }
+                },
+                '11': { 
+                    labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'], 
+                    completions: [237, 218, 1830, 841, 567, 392, 279, 152, 116, 193, 187, 166, 117, 147, 115, 99, 92, 109, 96, 81, 83, 71, 66, 103, 91, 95, 47, 76, 75, 76], 
+                    title: '2025년 11월 일별 가입 인원',
+                    annotations: {}
+                }
+            };
+
+            const gRiderMainTotalMay = sum(gRiderMainDailyDataStore['5'].completions); 
+            const gRiderMainTotalJune = sum(gRiderMainDailyDataStore['6'].completions); 
+            const gRiderMainTotalJuly = sum(gRiderMainDailyDataStore['7'].completions); 
+            const gRiderMainTotalAug = sum(gRiderMainDailyDataStore['8'].completions); 
+            const gRiderMainTotalSept = sum(gRiderMainDailyDataStore['9'].completions); 
+            const gRiderMainTotalOct = sum(gRiderMainDailyDataStore['10'].completions); 
+            const gRiderMainTotalNov = sum(gRiderMainDailyDataStore['11'].completions); 
+
+            const gRiderMainGrowthJuneVsMay = gRiderMainTotalMay > 0 ? ((gRiderMainTotalJune - gRiderMainTotalMay) / gRiderMainTotalMay) * 100 : Infinity;
+            const gRiderMainGrowthJulyVsJune = gRiderMainTotalJune > 0 ? ((gRiderMainTotalJuly - gRiderMainTotalJune) / gRiderMainTotalJune) * 100 : Infinity;
+            const gRiderMainGrowthAugVsJuly = gRiderMainTotalJuly > 0 ? ((gRiderMainTotalAug - gRiderMainTotalJuly) / gRiderMainTotalJuly) * 100 : Infinity;
+            const gRiderMainGrowthSeptVsAug = gRiderMainTotalAug > 0 ? ((gRiderMainTotalSept - gRiderMainTotalAug) / gRiderMainTotalAug) * 100 : Infinity;
+            const gRiderMainGrowthOctVsSept = gRiderMainTotalSept > 0 ? ((gRiderMainTotalOct - gRiderMainTotalSept) / gRiderMainTotalSept) * 100 : Infinity;
+            const gRiderMainGrowthNovVsOct = gRiderMainTotalOct > 0 ? ((gRiderMainTotalNov - gRiderMainTotalOct) / gRiderMainTotalOct) * 100 : Infinity;
+
+            gRiderMainDailyDataStore['5'].total = gRiderMainTotalMay; gRiderMainDailyDataStore['5'].growth = null; gRiderMainDailyDataStore['5'].prevMonthName = '4월';
+            gRiderMainDailyDataStore['6'].total = gRiderMainTotalJune; gRiderMainDailyDataStore['6'].growth = gRiderMainGrowthJuneVsMay; gRiderMainDailyDataStore['6'].prevMonthName = '5월';
+            gRiderMainDailyDataStore['7'].total = gRiderMainTotalJuly; gRiderMainDailyDataStore['7'].growth = gRiderMainGrowthJulyVsJune; gRiderMainDailyDataStore['7'].prevMonthName = '6월';
+            gRiderMainDailyDataStore['8'].total = gRiderMainTotalAug; gRiderMainDailyDataStore['8'].growth = gRiderMainGrowthAugVsJuly; gRiderMainDailyDataStore['8'].prevMonthName = '7월';
+            gRiderMainDailyDataStore['9'].total = gRiderMainTotalSept; gRiderMainDailyDataStore['9'].growth = gRiderMainGrowthSeptVsAug; gRiderMainDailyDataStore['9'].prevMonthName = '8월';
+            gRiderMainDailyDataStore['10'].total = gRiderMainTotalOct; gRiderMainDailyDataStore['10'].growth = gRiderMainGrowthOctVsSept; gRiderMainDailyDataStore['10'].prevMonthName = '9월';
+            gRiderMainDailyDataStore['11'].total = gRiderMainTotalNov; gRiderMainDailyDataStore['11'].growth = gRiderMainGrowthNovVsOct; gRiderMainDailyDataStore['11'].prevMonthName = '10월';
+
+            const gRiderMainVehicleData = {
+                labels: ['오토바이', '전기오토바이', '승용차', '자전거', '도보', '다마스', '킥보드'],
+                datasets: [{
+                    label: '운송수단별 가입자 수',
+                    data: [10616, 2002, 1491, 313, 264, 16, 15], 
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',  
+                        'rgba(13, 148, 136, 0.8)',  
+                        'rgba(16, 185, 129, 0.8)',  
+                        'rgba(234, 179, 8, 0.8)',   
+                        'rgba(249, 115, 22, 0.8)',  
+                        'rgba(239, 68, 68, 0.8)',   
+                        'rgba(168, 85, 247, 0.8)'   
+                    ],
+                    borderColor: '#ffffff', borderWidth: 2
+                }]
+            };
+
+            const gRiderSafetyData = {
+                labels: ['수료', '미수료'],
+                datasets: [{
+                    label: '안전교육 수료 현황',
+                    data: [8783, 5934], 
+                    backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(239, 68, 68, 0.8)'], // Green, Red
+                    borderColor: '#ffffff', borderWidth: 2
+                }]
+            };
+            
+            // 2-3. 그라이더플러스 데이터 (Tab 3)
+            const gRiderDailyDataStore = {
+                '6': { 
+                    labels: ['06-01', '06-02', '06-03', '06-04', '06-05', '06-06', '06-07', '06-08', '06-09', '06-10', '06-11', '06-12', '06-13', '06-14', '06-15', '06-16', '06-17', '06-18', '06-19', '06-20', '06-21', '06-22', '06-23', '06-24', '06-25', '06-26', '06-27', '06-28', '06-29', '06-30'], 
+                    completions: [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1], 
+                    title: '2025년 6월 일별 가입 인원',
+                    annotations: {}
+                },
+                '7': { 
+                    labels: ['07-01', '07-02', '07-03', '07-04', '07-05', '07-06', '07-07', '07-08', '07-09', '07-10', '07-11', '07-12', '07-13', '07-14', '07-15', '07-16', '07-17', '07-18', '07-19', '07-20', '07-21', '07-22', '07-23', '07-24', '07-25', '07-26', '07-27', '07-28', '07-29', '07-30', '07-31'], 
+                    completions: [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], 
+                    title: '2025년 7월 일별 가입 인원',
+                    annotations: {}
+                },
+                '8': { 
+                    labels: ['08-01', '08-02', '08-03', '08-04', '08-05', '08-06', '08-07', '08-08', '08-09', '08-10', '08-11', '08-12', '08-13', '08-14', '08-15', '08-16', '08-17', '08-18', '08-19', '08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26', '08-27', '08-28', '08-29', '08-30', '08-31'], 
+                    completions: [0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1, 0, 0, 1, 0, 1, 3, 1, 0, 2, 1, 17, 22, 11, 3, 0], 
+                    title: '2025년 8월 일별 가입 인원',
+                    annotations: {}
+                },
+                '9': { 
+                    labels: ['09-01', '09-02', '09-03', '09-04', '09-05', '09-06', '09-07', '09-08', '09-09', '09-10', '09-11', '09-12', '09-13', '09-14', '09-15', '09-16', '09-17', '09-18', '09-19', '09-20', '09-21', '09-22', '09-23', '09-24', '09-25', '09-26', '09-27', '09-28', '09-29', '09-30'], 
+                    completions: [8, 7, 15, 16, 26, 7, 20, 15, 30, 25, 29, 12, 20, 1, 24, 34, 29, 52, 28, 28, 22, 66, 80, 60, 34, 48, 37, 13, 29, 73], 
+                    title: '2025년 9월 일별 가입 인원',
+                    annotations: { 
+                        line1: { type: 'line', scaleID: 'x', value: '09-23', borderColor: 'rgb(220, 38, 38)', borderWidth: 3, label: { content: '그라이더플러스 시청제외', display: true, position: 'end', backgroundColor: 'rgba(220, 38, 38, 0.8)', color: 'white', font: { weight: 'bold' }, padding: 6 }, dash: [6, 6] } 
+                    }
+                },
+                '10': { 
+                    labels: ['10-01', '10-02', '10-03', '10-04', '10-05', '10-06', '10-07', '10-08', '10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26', '10-27', '10-28', '10-29', '10-30', '10-31'], 
+                    completions: [67, 62, 31, 19, 14, 4, 4, 30, 15, 23, 27, 40, 44, 106, 128, 241, 126, 75, 46, 114, 166, 117, 122, 76, 45, 40, 38, 68, 89, 57, 38], 
+                    title: '2025년 10월 일별 가입 인원',
+                    annotations: { 
+                        line1: { 
+                            type: 'line', 
+                            scaleID: 'x', 
+                            value: '10-19', 
+                            borderColor: 'rgb(234, 179, 8)', 
+                            borderWidth: 3, 
+                            label: { 
+                                content: '       네이버카페 광고 시작', 
+                                display: true, 
+                                position: 'start', 
+                                backgroundColor: 'rgba(234, 179, 8, 0.8)', 
+                                color: 'black', 
+                                font: { weight: 'bold' }, 
+                                padding: 6 
+                            }, 
+                            dash: [6, 6] 
+                        } 
+                    }
+                },
+                '11': { 
+                    labels: ['11-01', '11-02', '11-03', '11-04', '11-05', '11-06', '11-07', '11-08', '11-09', '11-10', '11-11', '11-12', '11-13', '11-14', '11-15', '11-16', '11-17', '11-18', '11-19', '11-20', '11-21', '11-22', '11-23', '11-24', '11-25', '11-26', '11-27', '11-28', '11-29', '11-30'], 
+                    completions: [18, 19, 124, 84, 57, 48, 51, 19, 8, 17, 20, 16, 37, 20, 5, 16, 13, 12, 10, 4, 8, 10, 4, 17, 5, 4, 4, 7, 3, 3], 
+                    title: '2025년 11월 일별 가입 인원',
+                    annotations: {}
+                }
+            };
+            
+            const gRiderTotalJune = sum(gRiderDailyDataStore['6'].completions); 
+            const gRiderTotalJuly = sum(gRiderDailyDataStore['7'].completions); 
+            const gRiderTotalAug = sum(gRiderDailyDataStore['8'].completions); 
+            const gRiderTotalSept = sum(gRiderDailyDataStore['9'].completions); 
+            const gRiderTotalOct = sum(gRiderDailyDataStore['10'].completions); 
+            const gRiderTotalNov = sum(gRiderDailyDataStore['11'].completions); 
+            
+            const gRiderGrowthJulyVsJune = gRiderTotalJune > 0 ? ((gRiderTotalJuly - gRiderTotalJune) / gRiderTotalJune) * 100 : Infinity;
+            const gRiderGrowthAugVsJuly = gRiderTotalJuly > 0 ? ((gRiderTotalAug - gRiderTotalJuly) / gRiderTotalJuly) * 100 : Infinity;
+            const gRiderGrowthSeptVsAug = gRiderTotalAug > 0 ? ((gRiderTotalSept - gRiderTotalAug) / gRiderTotalAug) * 100 : Infinity;
+            const gRiderGrowthOctVsSept = gRiderTotalSept > 0 ? ((gRiderTotalOct - gRiderTotalSept) / gRiderTotalSept) * 100 : Infinity;
+            const gRiderGrowthNovVsOct = gRiderTotalOct > 0 ? ((gRiderTotalNov - gRiderTotalOct) / gRiderTotalOct) * 100 : Infinity;
+
+            gRiderDailyDataStore['6'].total = gRiderTotalJune; gRiderDailyDataStore['6'].growth = null;
+            gRiderDailyDataStore['7'].total = gRiderTotalJuly; gRiderDailyDataStore['7'].growth = gRiderGrowthJulyVsJune; gRiderDailyDataStore['7'].prevMonthName = '6월';
+            gRiderDailyDataStore['8'].total = gRiderTotalAug; gRiderDailyDataStore['8'].growth = gRiderGrowthAugVsJuly; gRiderDailyDataStore['8'].prevMonthName = '7월';
+            gRiderDailyDataStore['9'].total = gRiderTotalSept; gRiderDailyDataStore['9'].growth = gRiderGrowthSeptVsAug; gRiderDailyDataStore['9'].prevMonthName = '8월';
+            gRiderDailyDataStore['10'].total = gRiderTotalOct; gRiderDailyDataStore['10'].growth = gRiderGrowthOctVsSept; gRiderDailyDataStore['10'].prevMonthName = '9월';
+            gRiderDailyDataStore['11'].total = gRiderTotalNov; gRiderDailyDataStore['11'].growth = gRiderGrowthNovVsOct; gRiderDailyDataStore['11'].prevMonthName = '10월';
+
+            const gRiderVehicleData = {
+                labels: ['오토바이', '전기오토바이', '승용차', '자전거', '도보', '다마스'],
+                datasets: [{
+                    label: '운송수단별 가입자 수',
+                    data: [3203, 343, 74, 42, 16, 1],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',  
+                        'rgba(13, 148, 136, 0.8)',  
+                        'rgba(16, 185, 129, 0.8)',  
+                        'rgba(234, 179, 8, 0.8)',   
+                        'rgba(249, 115, 22, 0.8)',  
+                        'rgba(239, 68, 68, 0.8)'    
+                    ],
+                    borderColor: '#ffffff', borderWidth: 2
+                }]
+            };
+
+            const gRiderPlusSafetyData = {
+                labels: ['수료', '미수료'],
+                datasets: [{
+                    label: '안전교육 수료 현황',
+                    data: [689, 2990],
+                    backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(239, 68, 68, 0.8)'], // Green, Red
+                    borderColor: '#ffffff', borderWidth: 2
+                }]
+            };
+            
+            // --- 3. 차트 변수 및 DOM 요소 ---
+            let safetyTrainingChart;
+            let gRiderDailySignupChart; 
+            let gRiderVehiclePieChart; 
+            let gRiderMainDailySignupChart; 
+            let gRiderMainVehiclePieChart; 
+            let gRiderSafetyPieChart; 
+            let gRiderPlusSafetyPieChart; 
+
+            let gRiderLineChartInitialized = false;
+            let gRiderPieChartInitialized = false;
+            let gRiderMainLineChartInitialized = false; 
+            let gRiderMainPieChartInitialized = false;
+            let gRiderSafetyPieChartInitialized = false; 
+            let gRiderPlusSafetyPieChartInitialized = false; 
+
+            // 안전교육
+            const safetyCtx = document.getElementById('safetyTrainingChart').getContext('2d');
+            const monthSelect = document.getElementById('monthSelect');
+
+            // 그라이더 (Main)
+            const gRiderMainLineCtx = document.getElementById('gRiderMainDailySignupChart').getContext('2d');
+            const gRiderMainMonthSelect = document.getElementById('gRiderMainMonthSelect');
+            const gRiderMainPieCtx = document.getElementById('gRiderMainVehiclePieChart').getContext('2d');
+            const gRiderSafetyPieCtx = document.getElementById('gRiderSafetyPieChart').getContext('2d'); 
+
+            // 그라이더플러스
+            const gRiderLineCtx = document.getElementById('gRiderDailySignupChart').getContext('2d');
+            const gRiderMonthSelect = document.getElementById('gRiderMonthSelect');
+            const gRiderPieCtx = document.getElementById('gRiderVehiclePieChart').getContext('2d');
+            const gRiderPlusSafetyPieCtx = document.getElementById('gRiderPlusSafetyPieChart').getContext('2d'); 
+
+            // 네비게이션
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const reportSections = document.querySelectorAll('.report-section');
+
+            // *** 네이버 아이콘 그리기 플러그인 정의 ***
+            const naverIconPlugin = {
+                id: 'naverIconPlugin',
+                afterDatasetsDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const xAxis = chart.scales.x;
+                    // '10-19' 라벨의 위치 찾기
+                    const x = xAxis.getPixelForValue('10-19');
                     
-                    // 액션/이력 셀의 레이아웃 결정
-                    if (isEditModeEnabled) {
-                        actionContent = `
-                            <div class="flex flex-col space-y-1 items-center">
-                                <div class="flex space-x-1 w-full justify-center">
-                                    ${editButtonHtml}
-                                    ${deleteButtonHtml}
-                                </div>
-                                ${hasHistory ? `<div class="mt-1">${toggleIcon}</div>` : ''}
-                            </div>
-                        `;
-                    } else if (!isEditModeEnabled && hasHistory) {
-                        actionContent = `
-                            <div class="flex items-center justify-center space-x-2">
-                                ${toggleIcon}
-                            </div>
-                        `;
-                    } else { // !isEditModeEnabled && !hasHistory
-                        actionContent = `<span class="text-gray-400">-</span>`;
+                    // 해당 x값이 차트 영역 내에 있고 유효하다면
+                    if (x && x >= chart.chartArea.left && x <= chart.chartArea.right) {
+                        const y = chart.chartArea.top + 33; 
+                        const iconSize = 20;
+                        // 아이콘 그리기
+                        ctx.drawImage(naverCafeIcon, x - 76, y - 10, iconSize, iconSize);
                     }
                 }
+            };
+
+            // --- 4. 차트 렌더링 함수 ---
+
+            // 4-1. 안전교육 차트 렌더링
+            function renderSafetyChart(month) {
+                if (safetyTrainingChart) {
+                    safetyTrainingChart.destroy();
+                }
+                const chartData = dataStore[month];
                 
-                // 근무여부 Select 옵션 생성
-                const statusSelectOptions = statusOptions.map(opt => 
-                    `<option value="${opt}" ${data.status === opt ? 'selected' : ''}>${opt}</option>`
-                ).join('');
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
 
-                // LeoX 상태 Select 옵션 생성
-                const leoxSelectOptions = leoxOptions.map(opt => 
-                    `<option value="${opt}" ${data.leoxStatus === opt ? 'selected' : ''}>${opt}</option>`
-                ).join('');
-
-
-                // 1. 메인 데이터 행: 동적으로 rowBg와 hoverBg 클래스를 적용합니다.
-                const mainRow = `
-                    <tr class="data-row ${isEditing ? 'editing bg-yellow-100 hover:bg-yellow-100' : rowBg + ' ' + hoverBg}" data-id="${data.id}" data-status="${data.status}" data-leox-status="${data.leoxStatus}" data-name="${data.name}">
-                        <!-- 아이디 (편집 불가) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-center font-semibold">${data.id}</td>
-                        
-                        <!-- 이름 (편집 가능) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-center" data-field="name">
-                            <span class="display-value ${isEditing ? 'hidden' : ''}">${data.name}</span>
-                            <input type="text" value="${data.name}" class="edit-input ${isEditing ? '' : 'hidden'}" data-old-value="${data.name}">
-                        </td>
-                        
-                        <!-- 근무여부 (편집 가능) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-center" data-field="status">
-                            <span class="display-value ${isEditing ? 'hidden' : ''}">${createStatusBadge(data.status)}</span>
-                            <select class="edit-select ${isEditing ? '' : 'hidden'}" data-old-value="${data.status}" data-field-name="status">
-                                ${statusSelectOptions}
-                            </select>
-                        </td>
-                        
-                        <!-- LeoX 상태 (편집 가능) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-center" data-field="leoxStatus">
-                            <span class="display-value ${isEditing ? 'hidden' : ''}">${createStatusBadge(data.leoxStatus)}</span>
-                            <select class="edit-select ${isEditing ? '' : 'hidden'}" data-old-value="${data.leoxStatus}" data-field-name="leoxStatus">
-                                ${leoxSelectOptions}
-                            </select>
-                        </td>
-                        
-                        <!-- 액션/이력 버튼 및 아이콘 -->
-                        <td class="px-3 py-4 text-center data-action" onclick="handleActionOrHistory(event, '${data.id}', ${hasHistory})">
-                            ${actionContent}
-                        </td>
-                    </tr>
-                `;
-
-                // 2. 변경 이력 상세 행 (초기에는 숨김)
-                const historyRow = `
-                    <tr class="history-row" data-history-id="${data.id}">
-                        <td colspan="5" class="p-0 border-b border-gray-200">
-                            <div class="overflow-hidden transition-all duration-300 ease-in-out max-h-0">
-                                ${createHistoryDetails(data.history)}
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                return mainRow + historyRow;
-            }).join('');
-
-            tbody.innerHTML = htmlContent;
-        }
-
-        /**
-         * 이력 아이콘 클릭 시 이력 섹션의 가시성을 토글합니다.
-         * 액션 버튼과 이력 아이콘 클릭을 분리 처리합니다.
-         */
-        function handleActionOrHistory(event, employeeId, hasHistory) {
-            // 편집 중인 상태라면 이력 토글을 막습니다.
-            if (editingId) return;
-
-            // 버튼 클릭 시에는 이력 토글을 무시합니다. 
-            if (event && event.target.closest('button')) {
-                return;
+                safetyTrainingChart = new Chart(safetyCtx, {
+                    type: 'line',
+                    plugins: localPlugins, 
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: '일별 수료 인원 (명)',
+                            data: chartData.completions,
+                            fill: true, 
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            pointBorderColor: 'rgb(59, 130, 246)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)',
+                            tension: 0.1,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: true, text: chartData.title, font: { size: 18, weight: '600' }, padding: { top: 10, bottom: 20 } },
+                            tooltip: {
+                                mode: 'index', intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) { label += ': '; }
+                                        if (context.parsed.y !== null) { label += context.parsed.y + ' 명'; }
+                                        return label;
+                                    }
+                                }
+                            },
+                            annotation: { annotations: chartData.annotations },
+                            datalabels: {
+                                display: true,
+                                align: 'top', anchor: 'end', offset: 6, 
+                                font: { weight: '500', size: 11 },
+                                color: '#1f2937', 
+                                formatter: function(value) { return value; }
+                            }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: chartData.xLabel, font: { size: 14, weight: '500' } }, grid: { display: false } },
+                            y: { title: { display: true, text: '수료 인원 (명)', font: { size: 14, weight: '500' } }, beginAtZero: true, max: 1000 } 
+                        },
+                        interaction: { intersect: false, mode: 'index' }
+                    }
+                });
             }
-            
-            // 이력이 없는 경우 토글할 수 없습니다.
-            if (!hasHistory) return;
 
-            const row = document.querySelector(`.data-row[data-id="${employeeId}"]`);
-            const historyIcon = row ? row.querySelector('.toggle-icon') : null;
-            if (row && historyIcon) {
-                toggleHistoryDetails(employeeId, row, historyIcon);
-            }
-        }
-
-        /**
-         * 이력 상세 정보를 토글합니다.
-         */
-        function toggleHistoryDetails(employeeId, row, icon) {
-            const tbody = document.getElementById('employeeTableBody');
-            const historyRow = tbody.querySelector(`tr[data-history-id="${employeeId}"]`);
-            if (!historyRow) return;
-
-            const detailContent = historyRow.querySelector('div');
-            const isCurrentlyOpen = historyRow.style.display === 'table-row';
-            
-            // 현재 행의 원래 배경색 클래스를 가져옵니다.
-            const statusGroup = row.getAttribute('data-status') ? getStatusGroup(row.getAttribute('data-status')) : 'gray';
-            const { rowBg, hoverBg } = getStatusClasses(statusGroup);
-
-
-            // 모든 열린 이력 행 닫기
-            tbody.querySelectorAll('.history-row').forEach(tr => {
-                const relatedRowId = tr.getAttribute('data-history-id');
-                const relatedRow = tbody.querySelector(`.data-row[data-id="${relatedRowId}"]`);
-                const relatedIcon = relatedRow ? relatedRow.querySelector('.toggle-icon') : null;
+            // 4-2. 안전교육 요약 업데이트
+            function updateSafetySummary(month) {
+                const data = dataStore[month];
+                const totalString = data.total.toLocaleString('ko-KR'); 
                 
-                // 닫을 행의 원래 배경색을 다시 계산합니다.
-                const relatedStatusGroup = relatedRow.getAttribute('data-status') ? getStatusGroup(relatedRow.getAttribute('data-status')) : 'gray';
-                const { rowBg: relatedRowBg } = getStatusClasses(relatedStatusGroup); 
+                document.getElementById('monthlyTotalSafety').innerText = totalString + ' 명';
 
-                if (tr.style.display === 'table-row') {
-                    tr.style.display = 'none';
-                    tr.querySelector('div').style.maxHeight = '0';
-                    if (relatedRow) {
-                        // 닫을 때 원래의 배경색으로 복원 (단, editing 중인 행의 색상은 복원하지 않음)
-                        if (!relatedRow.classList.contains('editing')) {
-                             // 기존에 임시로 추가했던 bg-blue-100 클래스를 제거합니다.
-                             relatedRow.classList.remove('bg-blue-100');
-                             // 원래의 조건부 배경색을 다시 추가합니다.
-                             relatedRow.classList.add(relatedRowBg);
+                let growthHTML = '';
+                if (data.growth !== null && isFinite(data.growth)) {
+                    const growthString = data.growth.toFixed(1); 
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    if (data.growth >= 0) {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-red-600">+${growthString}%</span>)`;
+                    } else {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-blue-600">${growthString}%</span>)`; 
+                    }
+                } else if (data.growth === Infinity) {
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    growthHTML = `(${comparisonMonth} 0명에서 증가)`;
+                }
+                document.getElementById('monthlyGrowthSafety').innerHTML = growthHTML;
+
+                let cumulativeTotal = 0;
+                let cumulativeLabel = "(6월)"; 
+                const monthNum = parseInt(month, 10); 
+
+                if (monthNum >= 6) cumulativeTotal += totalJune;
+                if (monthNum >= 7) cumulativeTotal += totalJuly;
+                if (monthNum >= 8) cumulativeTotal += totalAug;
+                if (monthNum >= 9) cumulativeTotal += totalSept;
+                if (monthNum >= 10) cumulativeTotal += totalOct;
+                if (monthNum >= 11) cumulativeTotal += totalNov; 
+                
+                if (monthNum > 6) {
+                    cumulativeLabel = `(6월~${month}월)`;
+                }
+
+                document.getElementById('cumulativeTotalSafety').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
+                document.querySelector('#cumulativeSummaryContainerSafety .text-md').innerText = cumulativeLabel;
+
+                const costPerPerson = 2000;
+                const monthlyCost = data.total * costPerPerson;
+                document.getElementById('monthlyCostSafety').innerHTML = `<span class="whitespace-nowrap">${monthlyCost.toLocaleString('ko-KR')} 원</span>`;
+            }
+
+            // 4-3. 그라이더(Main) 라인 차트 렌더링 (Tab 2)
+            function gRiderMainRenderLineChart(month) {
+                if (gRiderMainDailySignupChart) {
+                    gRiderMainDailySignupChart.destroy();
+                }
+                const chartData = gRiderMainDailyDataStore[month];
+                const yMax = 2000; 
+
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
+
+                gRiderMainDailySignupChart = new Chart(gRiderMainLineCtx, {
+                    type: 'line',
+                    plugins: localPlugins, 
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: '일별 가입 인원 (명)',
+                            data: chartData.completions,
+                            fill: true, 
+                            borderColor: 'rgb(217, 119, 6)', 
+                            backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: { display: true, text: chartData.title, font: { size: 18, weight: '600' }, padding: { top: 10, bottom: 20 } },
+                            tooltip: { mode: 'index', intersect: false }, 
+                            datalabels: {
+                                display: true, 
+                                align: 'top', offset: 6,
+                                font: { weight: '500', size: 11 },
+                                color: '#1f2937'
+                            },
+                            annotation: { 
+                                annotations: chartData.annotations || {} 
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: yMax, title: { display: true, text: '가입 인원 (명)' } }
+                        },
+                        interaction: { intersect: false, mode: 'index' } 
+                    }
+                });
+            }
+
+            // 4-4. 그라이더(Main) 요약 업데이트 (Tab 2)
+            function gRiderMainUpdateSummary(month) {
+                const data = gRiderMainDailyDataStore[month];
+                const totalString = data.total.toLocaleString('ko-KR'); 
+                
+                document.getElementById('monthlyTotalGRider').innerText = `${totalString} 명`;
+
+                let growthHTML = '';
+                if (data.growth !== null && isFinite(data.growth)) {
+                    const growthString = data.growth.toFixed(1); 
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    if (data.growth >= 0) {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-red-600">+${growthString}%</span>)`;
+                    } else {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-blue-600">${growthString}%</span>)`;
+                    }
+                } else if (data.growth === Infinity) {
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    growthHTML = `(${comparisonMonth} 0명에서 증가)`;
+                }
+                document.getElementById('monthlyGrowthGRider').innerHTML = growthHTML;
+                
+                let cumulativeTotal = 0;
+                let cumulativeLabel = "(5월)"; 
+                const monthNum = parseInt(month, 10);
+
+                if (monthNum >= 5) cumulativeTotal += gRiderMainTotalMay; 
+                if (monthNum >= 6) cumulativeTotal += gRiderMainTotalJune;
+                if (monthNum >= 7) cumulativeTotal += gRiderMainTotalJuly;
+                if (monthNum >= 8) cumulativeTotal += gRiderMainTotalAug;
+                if (monthNum >= 9) cumulativeTotal += gRiderMainTotalSept;
+                if (monthNum >= 10) cumulativeTotal += gRiderMainTotalOct;
+                if (monthNum >= 11) cumulativeTotal += gRiderMainTotalNov;
+                
+                if (monthNum > 5) { 
+                    cumulativeLabel = `(5월~${month}월)`;
+                }
+
+                document.getElementById('cumulativeTotalGRider').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
+                document.querySelector('#cumulativeSummaryContainerGRider .text-md').innerText = cumulativeLabel;
+            }
+
+            // 4-5. 그라이더(Main) 파이 차트 렌더링 (Tab 2)
+            function gRiderMainRenderPieChart() {
+                if (gRiderMainVehiclePieChart) {
+                    gRiderMainVehiclePieChart.destroy();
+                }
+                gRiderMainVehiclePieChart = new Chart(gRiderMainPieCtx, {
+                    type: 'pie',
+                    data: gRiderMainVehicleData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { font: { size: 14 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ${value.toLocaleString('ko-KR')} 명 (${percentage}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: { 
+                                display: true, color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: (value, context) => {
+                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100);
+                                    if (percentage < 5) return ''; 
+                                    return percentage.toFixed(0) + '%';
+                                },
+                            }
                         }
                     }
-                    if (relatedIcon) relatedIcon.style.transform = 'rotate(0deg)';
+                });
+            }
+
+            // 4-5-B. 그라이더(Main) 안전교육 파이 차트 렌더링 (Tab 2)
+            function gRiderRenderSafetyPieChart() {
+                if (gRiderSafetyPieChart) {
+                    gRiderSafetyPieChart.destroy();
                 }
-            });
-            
-            // 현재 행 열기/닫기 처리
-            if (isCurrentlyOpen) {
-                // 이미 닫힘 처리되었으므로 아무것도 하지 않음 (모든 행 닫기 로직에서 처리됨)
-            } else {
-                // 닫혀 있었으므로 현재 행 열기
-                historyRow.style.display = 'table-row';
-                setTimeout(() => {
-                    detailContent.style.maxHeight = `${detailContent.scrollHeight + 10}px`; 
-                }, 50);
+                gRiderSafetyPieChart = new Chart(gRiderSafetyPieCtx, {
+                    type: 'pie',
+                    data: gRiderSafetyData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { font: { size: 14 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ${value.toLocaleString('ko-KR')} 명 (${percentage}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: { 
+                                display: true, color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: (value, context) => {
+                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100);
+                                    if (percentage < 5) return ''; 
+                                    return percentage.toFixed(0) + '%';
+                                },
+                            }
+                        }
+                    }
+                });
+            }
 
-                if (icon) icon.style.transform = 'rotate(90deg)';
+
+            // 4-6. 그라이더플러스 라인 차트 렌더링 (Tab 3)
+            function gRiderRenderLineChart(month) {
+                if (gRiderDailySignupChart) {
+                    gRiderDailySignupChart.destroy();
+                }
+                const chartData = gRiderDailyDataStore[month];
+                const yMax = 250;
+
+                const localPlugins = [];
+                if (month === '10') {
+                    localPlugins.push(naverIconPlugin);
+                }
+
+                gRiderDailySignupChart = new Chart(gRiderLineCtx, {
+                    type: 'line',
+                    plugins: localPlugins, 
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: '일별 가입 인원 (명)',
+                            data: chartData.completions,
+                            fill: true, 
+                            borderColor: 'rgb(22, 163, 74)', 
+                            backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: { display: true, text: chartData.title, font: { size: 18, weight: '600' }, padding: { top: 10, bottom: 20 } },
+                            tooltip: { mode: 'index', intersect: false }, 
+                            datalabels: {
+                                display: true, 
+                                align: 'top', offset: 6,
+                                font: { weight: '500', size: 11 },
+                                color: '#1f2937'
+                            },
+                            annotation: { 
+                                annotations: chartData.annotations || {} 
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: yMax, title: { display: true, text: '가입 인원 (명)' } }
+                        },
+                        interaction: { intersect: false, mode: 'index' } 
+                    }
+                });
+            }
+
+            // 4-7. 그라이더플러스 요약 업데이트 (Tab 3)
+            function gRiderUpdateSummary(month) {
+                const data = gRiderDailyDataStore[month];
+                const totalString = data.total.toLocaleString('ko-KR'); 
                 
-                // 배경색 변경: 원래의 조건부 배경색을 제거하고, 이력 열람 중인 배경색을 적용합니다.
-                row.classList.remove(rowBg);
-                row.classList.add('bg-blue-100'); // 이력 열람 중인 행은 파란색 배경으로 표시
-            }
-        }
+                document.getElementById('monthlyTotalGRiderPlus').innerText = `${totalString} 명`;
 
-        /**
-         * 테이블 행을 편집 모드로 전환합니다.
-         */
-        function toggleEditMode(event, employeeId) {
-            // event가 있을 경우에만 stopPropagation 호출 (addNewEmployee에서 null로 호출될 수 있음)
-            if (event) {
-                event.stopPropagation(); 
-            }
+                let growthHTML = '';
+                if (data.growth !== null && isFinite(data.growth)) {
+                    const growthString = data.growth.toFixed(1); 
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    if (data.growth >= 0) {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-red-600">+${growthString}%</span>)`;
+                    } else {
+                        growthHTML = `(${comparisonMonth} 대비 <span class="text-blue-600">${growthString}%</span>)`;
+                    }
+                } else if (data.growth === Infinity) {
+                    const comparisonMonth = data.prevMonthName || '전월';
+                    growthHTML = `(${comparisonMonth} 0명에서 증가)`;
+                }
+                document.getElementById('monthlyGrowthGRiderPlus').innerHTML = growthHTML;
 
-            if (!isEditModeEnabled) {
-                console.warn("[경고] 수정 모드가 비활성화되어 있습니다. 먼저 비밀번호를 입력하여 활성화해주세요.");
-                return;
-            }
-            
-            if (editingId && editingId !== employeeId) {
-                console.warn(`[경고] ID ${editingId}의 편집을 먼저 저장하거나 취소해주세요.`);
-                return;
-            }
-            
-            const row = document.querySelector(`.data-row[data-id="${employeeId}"]`);
-            if (!row) return;
+                let cumulativeTotal = 0;
+                let cumulativeLabel = "(6월)"; 
+                const monthNum = parseInt(month, 10);
 
-            // 이력 행이 열려 있다면 닫습니다.
-            const historyIcon = row.querySelector('.toggle-icon');
-            if (row.classList.contains('bg-blue-100')) {
-                toggleHistoryDetails(employeeId, row, historyIcon);
-            }
-            
-            // 편집 모드 시작
-            editingId = employeeId;
-            row.classList.add('editing', 'bg-yellow-100', 'hover:bg-yellow-100');
-            
-            // 현재 행의 원래 배경색을 가져와 제거합니다.
-            const statusGroup = getStatusGroup(row.getAttribute('data-status'));
-            const { rowBg, hoverBg } = getStatusClasses(statusGroup);
-            row.classList.remove(rowBg, hoverBg);
-
-
-            // 1. 입력 필드 보이기 / 디스플레이 값 숨기기
-            row.querySelectorAll('[data-field]').forEach(cell => {
-                cell.querySelector('.display-value').classList.add('hidden');
-                const input = cell.querySelector('.edit-input') || cell.querySelector('.edit-select');
-                if (input) input.classList.remove('hidden');
-            });
-            
-            // 2. 액션 버튼 업데이트 (저장/취소)
-            const actionCell = row.querySelector('.data-action');
-            actionCell.innerHTML = `
-                <div class="flex flex-col space-y-1">
-                    <button onclick="saveChanges(event, '${employeeId}')" class="text-xs font-bold py-1 px-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition duration-150 shadow-md">저장</button>
-                    <button onclick="cancelEdit(event, '${employeeId}')" class="text-xs font-bold py-1 px-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition duration-150 shadow-md">취소</button>
-                </div>
-            `;
-            // 액션 셀 클릭 시 이력 토글 이벤트 방지 (버튼 클릭만 허용)
-            actionCell.onclick = (e) => e.stopPropagation();
-        }
-
-        /**
-         * 변경 사항을 저장하고 새 이력을 생성합니다.
-         */
-        function saveChanges(event, employeeId) {
-            event.stopPropagation();
-            
-            const row = document.querySelector(`.data-row[data-id="${employeeId}"]`);
-            if (!row) return;
-            
-            const employee = employeeData.find(d => d.id === employeeId);
-            if (!employee) return;
-
-            const newValues = {};
-            const changes = {};
-
-            let hasChanges = false;
-            
-            // 1. 새 값 수집 및 변경 사항 확인
-            row.querySelectorAll('[data-field]').forEach(cell => {
-                const fieldName = cell.getAttribute('data-field');
-                const input = cell.querySelector('.edit-input') || cell.querySelector('.edit-select');
+                if (monthNum >= 6) cumulativeTotal += gRiderTotalJune;
+                if (monthNum >= 7) cumulativeTotal += gRiderTotalJuly;
+                if (monthNum >= 8) cumulativeTotal += gRiderTotalAug;
+                if (monthNum >= 9) cumulativeTotal += gRiderTotalSept;
+                if (monthNum >= 10) cumulativeTotal += gRiderTotalOct;
+                if (monthNum >= 11) cumulativeTotal += gRiderTotalNov;
                 
-                if (input) {
-                    const newValue = input.value.trim();
-                    const oldValue = input.getAttribute('data-old-value').trim();
-                    
-                    if (newValue !== oldValue) {
-                        hasChanges = true;
-                        newValues[fieldName] = newValue;
+                if (monthNum > 6) {
+                    cumulativeLabel = `(6월~${month}월)`;
+                }
 
-                        changes[fieldName] = { from: oldValue, to: newValue };
-                        
-                        // 변경된 값으로 data-old-value 업데이트
-                        input.setAttribute('data-old-value', newValue);
+                document.getElementById('cumulativeTotalGRiderPlus').innerText = cumulativeTotal.toLocaleString('ko-KR') + ' 명';
+                document.querySelector('#cumulativeSummaryContainerGRiderPlus .text-md').innerText = cumulativeLabel;
+            }
+
+            // 4-8. 그라이더플러스 파이 차트 렌더링 (Tab 3)
+            function gRiderRenderPieChart() {
+                if (gRiderVehiclePieChart) {
+                    gRiderVehiclePieChart.destroy();
+                }
+                gRiderVehiclePieChart = new Chart(gRiderPieCtx, {
+                    type: 'pie',
+                    data: gRiderVehicleData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { font: { size: 14 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ${value.toLocaleString('ko-KR')} 명 (${percentage}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: { 
+                                display: true, color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: (value, context) => {
+                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100);
+                                    if (percentage < 5) return ''; 
+                                    return percentage.toFixed(0) + '%';
+                                },
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 4-8-B. 그라이더플러스 안전교육 파이 차트 렌더링 (Tab 3)
+            function gRiderPlusRenderSafetyPieChart() {
+                if (gRiderPlusSafetyPieChart) {
+                    gRiderPlusSafetyPieChart.destroy();
+                }
+                gRiderPlusSafetyPieChart = new Chart(gRiderPlusSafetyPieCtx, {
+                    type: 'pie',
+                    data: gRiderPlusSafetyData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { font: { size: 14 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ${value.toLocaleString('ko-KR')} 명 (${percentage}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: { 
+                                display: true, color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: (value, context) => {
+                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100);
+                                    if (percentage < 5) return ''; // 5% 미만은 숨김
+                                    return percentage.toFixed(0) + '%';
+                                },
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- 5. 네비게이션 및 이벤트 리스너 ---
+
+            // 탭 변경 로직
+            function showSection(sectionId) {
+                reportSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                tabButtons.forEach(button => {
+                    button.classList.remove('tab-active');
+                    button.classList.add('tab-inactive');
+                });
+
+                const activeSection = document.getElementById(sectionId);
+                if (activeSection) {
+                    activeSection.classList.remove('hidden');
+                }
+                const activeButton = document.querySelector(`.tab-button[data-section="${sectionId}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('tab-active');
+                    activeButton.classList.remove('tab-inactive');
+                }
+
+                if (sectionId === 'section-g-rider') {
+                    if (!gRiderMainLineChartInitialized) {
+                        gRiderMainRenderLineChart(gRiderMainMonthSelect.value);
+                        gRiderMainUpdateSummary(gRiderMainMonthSelect.value);
+                        gRiderMainLineChartInitialized = true;
+                    }
+                    if (!gRiderMainPieChartInitialized) {
+                        gRiderMainRenderPieChart();
+                        gRiderMainPieChartInitialized = true;
+                    }
+                    if (!gRiderSafetyPieChartInitialized) {
+                        gRiderRenderSafetyPieChart();
+                        gRiderSafetyPieChartInitialized = true;
                     }
                 }
-            });
 
-            if (!hasChanges) {
-                console.log(`ID ${employeeId}: 변경 사항이 없습니다. 편집 모드를 종료합니다.`);
-                cancelEdit(event, employeeId);
-                return;
-            }
-
-            // 2. 데이터 업데이트 및 Type Description 결정
-            const employeeName = newValues.name || employee.name; // 수정된 이름이 있으면 사용, 없으면 기존 이름 사용
-            let typeDescription = `직원 상태 변경 (${employeeName})`;
-            
-            if (changes.status && changes.status.to === '퇴사' && changes.leoxStatus && changes.leoxStatus.to === '삭제') {
-                 // 퇴사 처리 시 이름 명시
-                 typeDescription = `${employeeName}님 퇴사 및 ID 삭제 처리`;
-            } else if (changes.status && changes.status.to === '신청 없음' && changes.leoxStatus && changes.leoxStatus.to === '미존재' && (changes.name && changes.name.to === '없음')) {
-                 // ID 초기화 시 이전 사용자 이름 명시 (이름 변경이 있었을 경우)
-                 const formerName = changes.name ? changes.name.from : employee.name;
-                 typeDescription = `ID 초기화 (이전 사용자: ${formerName})`;
-            } else if (changes.status && changes.status.from === '신규 등록') {
-                 // 신규 등록 항목의 첫 저장
-                 typeDescription = `신규 등록 항목 최종 저장 (${employeeName})`;
-            } else if (changes.status && changes.status.from === '신청 없음' && changes.name && changes.name.from === '없음') {
-                 // 재할당 시 신규 사용자 이름 명시
-                 typeDescription = `ID 재할당 및 신규 등록 (${employeeName})`;
-            } else if (changes.name) {
-                 // 이름이 포함된 일반 변경
-                 typeDescription = `직원 이름 및 상태 변경 (${employeeName})`;
-            } else {
-                 // 이름이 포함되지 않은 일반 상태 변경
-                 typeDescription = `직원 상태 변경 (${employeeName})`;
-            }
-
-
-            // 3. 새 이력 항목 생성
-            const newHistoryEntry = {
-                date: new Date().toISOString().substring(0, 10),
-                type: typeDescription,
-                details: `${employeeName}님의 현황이 업데이트되었습니다. (${Object.keys(changes).length}개 필드 변경됨. 대시보드 수정 기능 사용)`,
-                changes: changes,
-            };
-
-            // 4. 메인 데이터 객체와 이력 배열 업데이트
-            Object.assign(employee, newValues); 
-            employee.history.unshift(newHistoryEntry); 
-
-            // 5. 편집 모드 종료 및 테이블 리렌더링
-            editingId = null;
-            row.classList.remove('editing', 'bg-yellow-100', 'hover:bg-yellow-100');
-            
-            // 필터링 및 테이블 전체 리렌더링 (변경 이력을 반영하기 위해 필수)
-            filterTable(); 
-        }
-
-        /**
-         * 변경 사항을 저장하지 않고 편집 모드를 종료합니다.
-         */
-        function cancelEdit(event, employeeId) {
-            if (event) event.stopPropagation();
-            
-            const row = document.querySelector(`.data-row[data-id="${employeeId}"]`);
-            if (!row) return;
-
-            // 1. 입력 필드 숨기기 / 디스플레이 값 보이기
-            row.querySelectorAll('[data-field]').forEach(cell => {
-                const input = cell.querySelector('.edit-input') || cell.querySelector('.edit-select');
-                if (input) {
-                    // 값은 old-value로 다시 설정
-                    input.value = input.getAttribute('data-old-value'); 
-                    input.classList.add('hidden');
+                if (sectionId === 'section-g-rider-plus') {
+                    if (!gRiderLineChartInitialized) {
+                        gRiderRenderLineChart(gRiderMonthSelect.value);
+                        gRiderUpdateSummary(gRiderMonthSelect.value);
+                        gRiderLineChartInitialized = true;
+                    }
+                    if (!gRiderPieChartInitialized) {
+                        gRiderRenderPieChart();
+                        gRiderPieChartInitialized = true;
+                    }
+                    if (!gRiderPlusSafetyPieChartInitialized) {
+                        gRiderPlusRenderSafetyPieChart();
+                        gRiderPlusSafetyPieChartInitialized = true;
+                    }
                 }
-                cell.querySelector('.display-value').classList.remove('hidden');
-            });
-            
-            // 2. 편집 모드 플래그 및 스타일 제거
-            editingId = null;
-            row.classList.remove('editing', 'bg-yellow-100', 'hover:bg-yellow-100');
-            
-            // 3. 테이블 리렌더링 (액션 버튼을 다시 '수정'으로 변경)
-            filterTable();
-        }
+            }
 
-
-        // --- 필터링 및 초기화 로직 ---
-
-        const statusFilter = document.getElementById('statusFilter'); // Hidden input
-        const searchFilter = document.getElementById('searchFilter');
-
-        const filterTable = () => {
-            const selectedStatus = statusFilter.value;
-            const searchQuery = searchFilter.value.toLowerCase().trim();
-
-            const filteredData = employeeData.filter(data => {
-                const statusMatch = (selectedStatus === '전체' || data.status === selectedStatus || (selectedStatus === '근무중' && data.status === '신규 등록')); // 신규 등록도 근무중으로 간주
-                const searchMatch = (
-                    searchQuery === '' || 
-                    data.name.toLowerCase().includes(searchQuery) || 
-                    data.id.toLowerCase().includes(searchQuery)
-                );
-                return statusMatch && searchMatch;
-            });
-
-            // 필터링된 데이터로 테이블을 다시 렌더링합니다.
-            renderTable(filteredData);
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // 초기 테이블 렌더링
-            renderTable();
-            
-            // 1. 상태 필터 버튼 이벤트 리스너 등록
-            document.querySelectorAll('.status-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const status = e.target.getAttribute('data-status');
-                    document.getElementById('statusFilter').value = status; // Hidden input 업데이트
-                    filterTable();
-                    updateStatusButtonStyles(status);
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showSection(button.dataset.section);
                 });
             });
 
-            // 초기 버튼 스타일 적용
-            updateStatusButtonStyles(document.getElementById('statusFilter').value); 
-            
-            // 2. 검색 필터 이벤트 리스너 등록
-            searchFilter.addEventListener('input', filterTable);
-
-            // 3. 수정 모드 토글 버튼 이벤트 리스너 등록
-            document.getElementById('toggleEditModeBtn').addEventListener('click', toggleEditModeActivation);
-            document.getElementById('addNewIdBtn').addEventListener('click', addNewEmployee);
-            updateEditModeUI(); // 초기 UI 설정 (비활성화 상태)
-
-            // 4. 비밀번호 모달 이벤트 리스너 등록
-            document.getElementById('cancelPasswordBtn').addEventListener('click', hidePasswordModal);
-            document.getElementById('submitPasswordBtn').addEventListener('click', () => {
-                const password = document.getElementById('passwordInput').value;
-                checkPasswordAndActivate(password);
-            });
-            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const password = document.getElementById('passwordInput').value;
-                    checkPasswordAndActivate(password);
-                }
+            monthSelect.addEventListener('change', (event) => {
+                renderSafetyChart(event.target.value);
+                updateSafetySummary(event.target.value); 
             });
 
-            // 5. 삭제 확인 모달 이벤트 리스너 등록
-            document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
-                document.getElementById('deleteConfirmationModal').classList.add('hidden');
-                idToDelete = null;
+            gRiderMainMonthSelect.addEventListener('change', (event) => {
+                gRiderMainRenderLineChart(event.target.value);
+                gRiderMainUpdateSummary(event.target.value);
             });
-            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteEmployee);
-        });
+
+            gRiderMonthSelect.addEventListener('change', (event) => {
+                gRiderRenderLineChart(event.target.value);
+                gRiderUpdateSummary(event.target.value);
+            });
+
+            // --- 6. 초기 로드 ---
+            renderSafetyChart(monthSelect.value);
+            updateSafetySummary(monthSelect.value); 
+
+        }); 
     </script>
-</body>
-</html>
+</body></html>
